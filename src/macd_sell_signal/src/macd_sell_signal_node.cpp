@@ -2,6 +2,7 @@
 #include <ros/time.h>
 #include "ticker_publisher/ticker.h"
 
+double emaf_;//for testing
 //TODO: make these a circular buffer/queue
 double short_emaf_, long_emaf_, macd_, signal_macd_;
 //parameters read in at runtime
@@ -22,7 +23,7 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &msg){
 
 int main(int argc, char** argv){
   //Node setup
-  ros::init(argc, argv, "sell_signal_node");
+  ros::init(argc, argv, "macd_sell_signal_node");
   ros::NodeHandle n;//global
   ros::NodeHandle nh; //local
 

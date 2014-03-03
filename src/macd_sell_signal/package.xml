@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>sell_signal</name>
+  <name>macd_sell_signal</name>
   <version>0.0.1</version>
-  <description>This package will publish to a topic when it decides on a sell</description>
+  <description>This package will publish when to sell based on a moving average convergence diverence indicator</description>
 
   <maintainer email="cole.robert.c@gmail.com">Bob Cole</maintainer>
 

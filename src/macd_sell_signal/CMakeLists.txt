@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(sell_signal)
+project(macd_sell_signal)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -105,14 +105,14 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(sell_signal_node src/sell_signal_node.cpp)
+add_executable(macd_sell_signal_node src/macd_sell_signal_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(sell_signal_node sell_signal_generate_messages_cpp)
+add_dependencies(macd_sell_signal_node macd_sell_signal_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(sell_signal_node
+target_link_libraries(macd_sell_signal_node
   ${catkin_LIBRARIES}
 )
 
