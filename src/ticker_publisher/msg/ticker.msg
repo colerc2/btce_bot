@@ -1,0 +1,10 @@
+float64 high
+float64 low
+float64 avg
+float64 vol
+float64 vol_cur
+float64 last
+float64 buy
+float64 sell
+string updated
+string server_time
