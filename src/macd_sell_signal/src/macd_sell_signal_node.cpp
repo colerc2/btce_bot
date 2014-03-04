@@ -2,6 +2,7 @@
 #include <ros/time.h>
 #include <string>
 #include "ticker_publisher/ticker.h"
+#include <macd_sell_signal/macd_indicator.h>
 
 double emaf_;//for testing
 //TODO: make these a circular buffer/queue

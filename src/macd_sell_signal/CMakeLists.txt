@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   ticker_publisher
+  macd_sell_signal
   message_generation
 )
 
@@ -82,7 +83,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES sell_signal
   CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher message_runtime
 #  DEPENDS system_lib
