@@ -22,5 +22,9 @@
     <param name="spread_value" value="-2"/>   
   </node>
 
+  <node pkg="plot_macd" type="plot_macd_node.py" name="plot_macd_btc_usd" output="screen">	
+    <param name="macd_topic" value="macd_12_26_9_x60"/>
+  </node>
+
   
 </launch>

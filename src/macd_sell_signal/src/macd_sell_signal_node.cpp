@@ -61,7 +61,6 @@ int main(int argc, char** argv){
   ticker_sub_ = n.subscribe(ticker_topic,1,ticker_callback);
 
   //Publishers
-  //TODO: topic should change based on parameters
   std::string macd_topic = "macd_" + std::to_string(short_) + 
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_);
