@@ -8,25 +8,31 @@ import csv
 import time
 
 def pub_ticker():
-    pub = rospy.Publisher('ticker', ticker)
-    rospy.init_node('ticker_node')
-    
-    attrs = ('high', 'low', 'avg', 'vol', 'vol_cur', 'last',
-             'buy', 'sell', 'updated', 'server_time')
-    
-    connection = btceapi.BTCEConnection()
-    
-    ticker_ = btceapi.getTicker("btc_usd", connection)
-    last = ticker_
+    rospy.init_node('ticker_publisher_node')
 
+    trade_pair = rospy.get_param('~trade_pair', 'btc_usd')
+    topic_name = 'ticker_' + trade_pair
+    pub = rospy.Publisher(topic_name, ticker)
+        
+    
+    #attrs = ('high', 'low', 'avg', 'vol', 'vol_cur', 'last',
+     #        'buy', 'sell', 'updated', 'server_time')
+    
+    #make persistent connection so it doesn't have to every request
+    connection = btceapi.BTCEConnection()
+
+    #create empty ticker message
     msg = ticker()
+
+    #while ROs is still running, publish ticker data
     while not rospy.is_shutdown():
         try:
-            ticker_ = btceapi.getTicker("btc_usd", connection)
+            ticker_ = btceapi.getTicker(trade_pair, connection)
         except:
             connection = btce_api.BTCEConnection()
             pass
 
+        msg.trade_pair = trade_pair
         msg.high = ticker_.high
         msg.low = ticker_.low
         msg.avg = ticker_.avg
