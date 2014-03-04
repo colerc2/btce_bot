@@ -14,8 +14,8 @@ private:
   double short_alpha_, long_alpha_, signal_alpha_;
 
 public:
-  macd_indicator();
-  macd_indicator(int short_len, int long_len, int sig_len, int period_len, int spread_window_len);
-  int update(double new_data);
+  inline macd_indicator(){}
+  macd_indicator(int short_len, int long_len, int sig_len, int period_len);
+  int update(double new_data, double &short_emaf, double &long_emaf, double &macd, double &signal, double &macd_hist);
   
 };

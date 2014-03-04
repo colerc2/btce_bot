@@ -6,24 +6,23 @@
 
 double emaf_;//for testing
 //TODO: make these a circular buffer/queue
-double short_emaf_, long_emaf_, macd_, signal_macd_;
+double short_emaf_line_, long_emaf_line_, macd_line_, signal_line_, macd_hist_;
+
+//MACD object
+macd_indicator* macd_;
 
 //parameters read in at runtime
 int short_, long_, sig_, period_, spread_window_;
 double spread_value_;
 std::string trade_pair_;
 
-void exponential_moving_average(double data, double alpha){
-  emaf_ = alpha*data + (1-alpha)*emaf_;
-}
-
 void ticker_callback(const ticker_publisher::ticker::ConstPtr &msg){
   //ROS_INFO("\nhigh:\t%f\nlow:\t%f\navg\t%f\nvol\t%f\nvol_cur\t%f\nlast\t%f\nbuy\t%f\nsell\t%f",
   //	   msg->high, msg->low, msg->avg, msg->vol, msg->vol_cur, msg->last, msg->buy, msg->sell);
   ticker_publisher::ticker ticker_msg = *msg;
-  double alpha = (2.0/130);
-  exponential_moving_average(ticker_msg.last, alpha);
-  ROS_INFO("EMAF:\t%f", emaf_);
+  macd_->update(msg->last, short_emaf_line_, long_emaf_line_, macd_line_, signal_line_, macd_hist_);
+  ROS_INFO("(%f,%f,%f,%f,%f)",short_emaf_line_, long_emaf_line_, macd_line_, signal_line_, macd_hist_);
+  
 }
 
 int main(int argc, char** argv){
@@ -47,7 +46,7 @@ int main(int argc, char** argv){
   ros::Subscriber ticker_sub = n.subscribe(ticker_topic,1,ticker_callback);
   
   //intialize globals
-  emaf_ = 0;
+  macd_ = new macd_indicator(short_, long_, sig_, period_);
  
  
   //handle callbacks in separate thread, not necessary now, but might be later

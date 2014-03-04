@@ -84,7 +84,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES sell_signal
+  LIBRARIES macd_indicator
   CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher message_runtime
 #  DEPENDS system_lib
 )
@@ -97,13 +97,15 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
+add_library(macd_indicator src/macd_indicator.cpp)
 ## Declare a cpp library
-# add_library(sell_signal
-#   src/${PROJECT_NAME}/sell_signal.cpp
-# )
+#add_library(sell_signal_node
+#  src/${PROJECT_NAME}/macd_indicator.cpp
+#)
 
 ## Declare a cpp executable
 add_executable(macd_sell_signal_node src/macd_sell_signal_node.cpp)
@@ -114,7 +116,7 @@ add_dependencies(macd_sell_signal_node macd_sell_signal_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(macd_sell_signal_node
-  ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES} macd_indicator
 )
 
 #############
