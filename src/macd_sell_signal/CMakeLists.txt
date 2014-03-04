@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(macd_sell_signal)
 
+#added this so i could use the stupid damn std::to_string method
+set(CMAKE_CXX_FLAGS "-std=c++0x")
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -47,10 +50,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-#add_message_files(
-#  FILES
-#  ticker.msg
-#)
+add_message_files(
+  FILES
+  macd.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,7 +73,6 @@ find_package(catkin REQUIRED COMPONENTS
 #generate_messages(
 #  DEPENDENCIES
 #  std_msgs
-#  ticker_publisher
 #)
 
 ###################################
@@ -110,14 +112,17 @@ add_library(macd_indicator src/macd_indicator.cpp)
 ## Declare a cpp executable
 add_executable(macd_sell_signal_node src/macd_sell_signal_node.cpp)
 
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(macd_sell_signal_node macd_sell_signal_generate_messages_cpp)
+#add_dependencies(macd_sell_signal_node macd_sell_signal_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(macd_sell_signal_node
   ${catkin_LIBRARIES} macd_indicator
 )
+
+
 
 #############
 ## Install ##

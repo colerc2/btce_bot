@@ -17,7 +17,7 @@
     <param name="short" value="12"/>
     <param name="long" value="26"/>
     <param name="sig" value="9"/>
-    <param name="period" value="20"/>
+    <param name="period" value="60"/>
     <param name="spread_window" value="30"/>
     <param name="spread_value" value="-2"/>   
   </node>

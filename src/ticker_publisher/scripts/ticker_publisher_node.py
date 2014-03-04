@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import String
+import std_msgs.msg
 from ticker_publisher.msg import ticker
 from collections import deque
 import btceapi
@@ -33,6 +33,7 @@ def pub_ticker():
             connection = btceapi.BTCEConnection()
             pass
 
+        msg.header.stamp = rospy.Time.now()
         msg.trade_pair = trade_pair
         msg.high = ticker_.high
         msg.low = ticker_.low
