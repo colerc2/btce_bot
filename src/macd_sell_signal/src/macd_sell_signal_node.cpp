@@ -1,12 +1,16 @@
 #include <ros/ros.h>
 #include <ros/time.h>
+#include <string>
 #include "ticker_publisher/ticker.h"
 
 double emaf_;//for testing
 //TODO: make these a circular buffer/queue
 double short_emaf_, long_emaf_, macd_, signal_macd_;
+
 //parameters read in at runtime
-double short_, long_, sig_, period_;
+int short_, long_, sig_, period_, spread_window_;
+double spread_value_;
+std::string trade_pair_;
 
 void exponential_moving_average(double data, double alpha){
   emaf_ = alpha*data + (1-alpha)*emaf_;
@@ -27,7 +31,19 @@ int main(int argc, char** argv){
   ros::NodeHandle n;//global
   ros::NodeHandle nh; //local
 
-  ros::Subscriber ticker_sub = n.subscribe("ticker",1,ticker_callback);
+  //grab parameters
+  nh.param("trade_pair", trade_pair_, std::string("error"));
+  nh.param("short", short_, 0);
+  nh.param("long", long_, 0);
+  nh.param("sig", sig_, 0);
+  nh.param("period", period_, 0);
+  nh.param("spread_window", spread_window_, 0);
+  nh.param("spread_value", spread_value_, 0.0);
+
+  //Subscribers
+  //construct topic name from trade_pair_ string
+  std::string ticker_topic = "ticker_" + trade_pair_;
+  ros::Subscriber ticker_sub = n.subscribe(ticker_topic,1,ticker_callback);
   
   //intialize globals
   emaf_ = 0;

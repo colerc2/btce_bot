@@ -11,6 +11,16 @@
   <node pkg="ticker_publisher" type="ticker_publisher_node.py" name="ticker_publisher_ltc_btc" output="screen">
     <param name="trade_pair" value="ltc_btc"/>
   </node>
+  
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="12"/>
+    <param name="long" value="26"/>
+    <param name="sig" value="9"/>
+    <param name="period" value="20"/>
+    <param name="spread_window" value="30"/>
+    <param name="spread_value" value="-2"/>   
+  </node>
 
   
 </launch>
