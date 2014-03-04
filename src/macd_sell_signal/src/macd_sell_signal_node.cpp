@@ -29,7 +29,7 @@ int main(int argc, char** argv){
   //Node setup
   ros::init(argc, argv, "macd_sell_signal_node");
   ros::NodeHandle n;//global
-  ros::NodeHandle nh; //local
+  ros::NodeHandle nh("~"); //local
 
   //grab parameters
   nh.param("trade_pair", trade_pair_, std::string("error"));

@@ -29,7 +29,8 @@ def pub_ticker():
         try:
             ticker_ = btceapi.getTicker(trade_pair, connection)
         except:
-            connection = btce_api.BTCEConnection()
+            rospy.sleep(1.0)
+            connection = btceapi.BTCEConnection()
             pass
 
         msg.trade_pair = trade_pair
