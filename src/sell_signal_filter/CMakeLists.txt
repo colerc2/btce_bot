@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   ticker_publisher
+  macd_sell_signal
   message_generation
 )
 
@@ -82,9 +83,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES sell_signal_filter
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+ CATKIN_DEPENDS roscpp rospy  macd_sell_signal std_msgs
 #  DEPENDS system_lib
 )
 
@@ -96,6 +97,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -105,16 +107,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(sell_signal_filter_node src/sell_signal_filter_node.cpp)
+add_executable(sell_signal_filter_node src/sell_signal_filter_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(sell_signal_filter_node sell_signal_filter_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(sell_signal_filter_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(sell_signal_filter_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

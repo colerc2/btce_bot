@@ -5,6 +5,7 @@
 #include <macd_sell_signal/macd_indicator.h>//macd_indicator object
 #include "ticker_publisher/ticker.h"//ticker msg
 #include "macd_sell_signal/macd.h"//macd msg
+#include "macd_sell_signal/sell.h"
 #include "macd_sell_signal/macd_array.h"//macd array service
 
 //passed by reference to the macd_indicator object
@@ -24,6 +25,7 @@ std::string trade_pair_;
 //publishers/subscribers
 ros::Subscriber ticker_sub_;
 ros::Publisher macd_pub_;
+ros::Publisher sell_pub_;
 
 void publish_sell(){
   
@@ -119,6 +121,11 @@ int main(int argc, char** argv){
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_) + "/macd";
   macd_pub_ = n.advertise<macd_sell_signal::macd>(macd_topic, 10);
+  std::string sell_topic = "macd_" + std::to_string(short_) + 
+    "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
+    "_x" + std::to_string(period_) + "/sell";
+  sell_pub_ = n.advertise<macd_sell_signal::sell>(sell_topic, 10);
+
   
   //Services
   std::string macd_array_service = "macd_" + std::to_string(short_) + 

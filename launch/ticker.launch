@@ -23,6 +23,10 @@
     <param name="spread_value" value="1.26"/>   
   </node>
 
+  <node pkg="sell_signal_filter" type="sell_signal_filter_node" name="sell_signal_filter_node" output="screen">	
+  </node>
+
+
 <!--
   <node pkg="plot_macd" type="plot_macd_node.py" name="plot_macd_btc_usd" output="screen">	
     <param name="macd_topic" value="macd_12_26_9_x60"/>
