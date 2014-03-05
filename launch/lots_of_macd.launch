@@ -1,0 +1,138 @@
+<launch>
+
+  <node pkg="ticker_publisher" type="ticker_publisher_node.py" name="ticker_publisher_btc_usd" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+  </node>
+
+  <node pkg="ticker_publisher" type="ticker_publisher_node.py" name="ticker_publisher_ltc_usd" output="screen">
+    <param name="trade_pair" value="ltc_usd"/>
+  </node>
+
+  <node pkg="ticker_publisher" type="ticker_publisher_node.py" name="ticker_publisher_ltc_btc" output="screen">
+    <param name="trade_pair" value="ltc_btc"/>
+  </node>
+  
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_1" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="25"/>
+    <param name="sig" value="8"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+    <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_2" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="25"/>
+    <param name="sig" value="9"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_3" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="25"/>
+    <param name="sig" value="10"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_4" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="26"/>
+    <param name="sig" value="8"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_5" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="26"/>
+    <param name="sig" value="9"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_6" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="26"/>
+    <param name="sig" value="10"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_7" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="27"/>
+    <param name="sig" value="8"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_8" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="27"/>
+    <param name="sig" value="9"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_9" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="11"/>
+    <param name="long" value="27"/>
+    <param name="sig" value="10"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_10" output="screen">
+    <param name="trade_pair" value="btc_usd"/>
+    <param name="short" value="12"/>
+    <param name="long" value="25"/>
+    <param name="sig" value="8"/>
+    <param name="period" value="10"/>
+    <param name="num_old_periods" value="15"/>
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
+  </node>
+
+
+  <node pkg="sell_signal_filter" type="sell_signal_filter_node" name="sell_signal_filter_node" output="screen">	
+  </node>
+
+
+  
+</launch>
