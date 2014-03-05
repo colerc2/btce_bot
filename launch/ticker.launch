@@ -18,14 +18,17 @@
     <param name="long" value="26"/>
     <param name="sig" value="9"/>
     <param name="period" value="60"/>
+    <param name="num_old_periods" value="15"/>
     <param name="spread_window" value="30"/>
     <param name="spread_value" value="-2"/>   
   </node>
 
+<!--
   <node pkg="plot_macd" type="plot_macd_node.py" name="plot_macd_btc_usd" output="screen">	
     <param name="macd_topic" value="macd_12_26_9_x60"/>
     <param name="ticker_topic" value="ticker_btc_usd"/>
+    <param name="macd_array_service" value="macd_12_26_9_x60/macd_array"/>
   </node>
-
+-->
   
 </launch>
