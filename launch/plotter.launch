@@ -1,7 +1,7 @@
 <launch> 
 
  <node pkg="plot_macd" type="plot_macd_node.py" name="plot_macd_btc_usd" output="screen">	
-    <param name="macd_array_service" value="macd_12_26_9_x60/macd_array"/>
+    <param name="macd_array_service" value="macd_12_25_8_x10/macd_array"/>
   </node>
   
 </launch>

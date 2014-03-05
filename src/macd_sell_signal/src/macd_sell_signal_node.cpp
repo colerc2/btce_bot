@@ -25,6 +25,35 @@ std::string trade_pair_;
 ros::Subscriber ticker_sub_;
 ros::Publisher macd_pub_;
 
+void publish_sell(){
+  
+}
+
+void check_if_should_sell(){
+  if((old_points_.size() > period_*long_) &&
+     ((old_points_[old_points_.size()-2]).macd_hist > 0) &&//last point was positive
+     ((old_points_[old_points_.size()-1]).macd_hist < 0)){
+    //now check the more complicated stuff
+    int counter = 0;
+    int max = 0;
+    bool sell_signal = false;
+    std::vector<macd_sell_signal::macd>::reverse_iterator rit = old_points_.rbegin();
+    for ( rit = old_points_.rbegin();
+	  ((rit != old_points_.rend()) && (counter < spread_window_));
+	  rit++){
+      if(rit->macd_hist > spread_value_){
+	ROS_INFO("We got a sell signal from MACD(%d,%d,%d)x%d,%d,thresh=%lf",short_,long_,sig_,period_,spread_window_,spread_value_);
+	sell_signal = true;
+      }
+      counter++;
+    }
+    if(sell_signal){
+      publish_sell();
+    }
+  }
+  
+}
+
 void ticker_callback(const ticker_publisher::ticker::ConstPtr &msg){
   //ROS_INFO("\nhigh:\t%f\nlow:\t%f\navg\t%f\nvol\t%f\nvol_cur\t%f\nlast\t%f\nbuy\t%f\nsell\t%f",
   //	   msg->high, msg->low, msg->avg, msg->vol, msg->vol_cur, msg->last, msg->buy, msg->sell);
@@ -47,11 +76,14 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &msg){
   macd_msg.macd_hist = macd_hist_;
   macd_pub_.publish(macd_msg);
 
-  //pop front, push back
-  if(old_points_.size() > num_old_periods_*period_){
+  //pop front, push back (always save at least the last hour of data)
+  if(old_points_.size() > std::max(num_old_periods_*period_,3600)){
     old_points_.erase(old_points_.begin());
   }
   old_points_.push_back(macd_msg);
+
+  //check if it's time to sell breh
+  check_if_should_sell();
 }
 
 bool request_array(macd_sell_signal::macd_array::Request &req,

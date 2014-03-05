@@ -45,7 +45,7 @@ def get_data_and_plot(service):
             tmp_date = datetime.datetime.strptime(macd_msg.tick.server_time, "%Y-%m-%d %H:%M:%S")
             buffer_server_time.append(tmp_date)
             buffer_last.append(macd_msg.tick.last)
-
+            
         #plot her
         plt.clf()
         if(len(macd_array_.macd_array) > 0):

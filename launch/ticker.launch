@@ -15,12 +15,12 @@
   <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node" output="screen">
     <param name="trade_pair" value="btc_usd"/>
     <param name="short" value="12"/>
-    <param name="long" value="26"/>
-    <param name="sig" value="9"/>
-    <param name="period" value="60"/>
+    <param name="long" value="25"/>
+    <param name="sig" value="8"/>
+    <param name="period" value="10"/>
     <param name="num_old_periods" value="15"/>
-    <param name="spread_window" value="30"/>
-    <param name="spread_value" value="-2"/>   
+    <param name="spread_window" value="40"/>
+    <param name="spread_value" value="1.26"/>   
   </node>
 
 <!--
