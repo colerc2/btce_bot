@@ -4,3 +4,4 @@ build
 *.png
 devel
 *.rosinstall*
+*.tkr
