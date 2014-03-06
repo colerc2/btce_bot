@@ -28,6 +28,24 @@ ros::Publisher macd_pub_;
 ros::Publisher sell_pub_;
 
 void publish_sell(){
+  macd_sell_signal::sell sell_msg;
+  std::vector<macd_sell_signal::macd>::reverse_iterator rit = old_points_.rbegin();
+  //header
+  sell_msg.header.stamp = ros::Time::now();
+  //save MACD params
+  sell_msg.short_ema = short_;
+  sell_msg.long_ema = long_;
+  sell_msg.sig_ema = sig_;
+  sell_msg.period = period_;
+  sell_msg.spread_window = spread_window_;
+  sell_msg.spread_thresh = spread_value_;
+  //save MACD/ticker values before and after sell
+  sell_msg.current = *rit;
+  rit++;
+  sell_msg.previous = *rit;
+  
+  //publish sell
+  sell_pub_.publish(sell_msg);
   
 }
 
@@ -117,10 +135,12 @@ int main(int argc, char** argv){
   ticker_sub_ = n.subscribe(ticker_topic,1,ticker_callback);
 
   //Publishers
+  //macd topic
   std::string macd_topic = "macd_" + std::to_string(short_) + 
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_) + "/macd";
   macd_pub_ = n.advertise<macd_sell_signal::macd>(macd_topic, 10);
+  //sell topic
   std::string sell_topic = "macd_" + std::to_string(short_) + 
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_) + "/sell";

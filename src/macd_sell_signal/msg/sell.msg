@@ -1,1 +1,9 @@
-float64 placeholder
+Header header
+int64 short_ema
+int64 long_ema
+int64 sig_ema
+int64 period
+int64 spread_window
+int64 spread_thresh
+macd_sell_signal/macd current
+macd_sell_signal/macd previous
