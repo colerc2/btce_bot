@@ -10,9 +10,18 @@
 #include <iostream>
 #include <algorithm>
 #include <macd_sell_signal/sell.h>
+#include <macd_sell_signal/macd.h>
+#include <ticker_publisher/ticker.h>
+
+std::vector<macd_sell_signal::sell> sells_;
 
 void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
+  //check if sell should actually happen here
+  ROS_INFO("Sell signal callback in sell filter");
+  
 
+  //add sell to vector of sells
+  sells_.push_back(*msg);
 }
 
 

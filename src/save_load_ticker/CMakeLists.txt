@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(sell_signal_filter)
+project(save_load_ticker)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  macd_sell_signal
   roscpp
   rospy
   std_msgs
   ticker_publisher
-  macd_sell_signal
-  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,9 +82,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
-#  LIBRARIES sell_signal_filter
- CATKIN_DEPENDS roscpp rospy  macd_sell_signal ticker_publisher std_msgs
+#  INCLUDE_DIRS include
+#  LIBRARIES save_load_ticker
+ CATKIN_DEPENDS macd_sell_signal roscpp rospy std_msgs ticker_publisher message_runtime
 #  DEPENDS system_lib
 )
 
@@ -97,26 +96,25 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(sell_signal_filter
-#   src/${PROJECT_NAME}/sell_signal_filter.cpp
+# add_library(save_load_ticker
+#   src/${PROJECT_NAME}/save_load_ticker.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(sell_signal_filter_node src/sell_signal_filter_node.cpp)
+# add_executable(save_load_ticker_node src/save_load_ticker_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(sell_signal_filter_node sell_signal_filter_generate_messages_cpp)
+# add_dependencies(save_load_ticker_node save_load_ticker_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(sell_signal_filter_node
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(save_load_ticker_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -133,7 +131,7 @@ target_link_libraries(sell_signal_filter_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS sell_signal_filter sell_signal_filter_node
+# install(TARGETS save_load_ticker save_load_ticker_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -158,7 +156,7 @@ target_link_libraries(sell_signal_filter_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_sell_signal_filter.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_save_load_ticker.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>save_load_ticker</name>
+  <version>0.0.0</version>
+  <description>This package will run in the background with the ticker and provide services to MACD nodes</description>
+
+  <maintainer email="cole.robert.c@gmail.com">Bob Cole</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>ticker_publisher</build_depend>
+  <build_depend>macd_sell_signal</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>macd_sell_signal</run_depend>
+  <run_depend>ticker_publisher</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+
+</package>
