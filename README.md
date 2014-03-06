@@ -20,4 +20,4 @@ BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from 
   - Run the command *roslaunch launch/lots_of_macd.launch*  
     - This will launch a bunch of MACD nodes along with the [sell_signal_filter_node](src/sell_signal_filter). You can get a list of the current nodes by running *rosnode list*.  
   - Manually start a node with rosrun, here's an example:  
-    rosrun macd_sell_signal macd_sell_signal_node _trade_pair:="btc_usd" _short:="11" _long:="25" _sig:="8" _period:="10" _num_old_periods:="15" _spread_window:="40" _spread_value:="1.25"
+    ` rosrun macd_sell_signal macd_sell_signal_node _trade_pair:="btc_usd" _short:="11" _long:="25" _sig:="8" _period:="10" _num_old_periods:="15" _spread_window:="40" _spread_value:="1.25" `
