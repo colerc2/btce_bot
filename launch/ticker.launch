@@ -12,18 +12,7 @@
     <param name="trade_pair" value="ltc_btc"/>
   </node>
   
-  <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node" output="screen">
-    <param name="trade_pair" value="btc_usd"/>
-    <param name="short" value="12"/>
-    <param name="long" value="25"/>
-    <param name="sig" value="8"/>
-    <param name="period" value="10"/>
-    <param name="num_old_periods" value="15"/>
-    <param name="spread_window" value="40"/>
-    <param name="spread_value" value="1.26"/>   
-  </node>
-
-  <node pkg="sell_signal_filter" type="sell_signal_filter_node" name="sell_signal_filter_node" output="screen">	
+  <node pkg="save_load_ticker" type="save_load_ticker_node" name="save_load_ticker_node" output="screen">
   </node>
 
 

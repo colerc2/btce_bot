@@ -163,7 +163,7 @@ int main(int argc, char** argv){
    ros::ServiceServer macd_array_service = n.advertiseService(macd_array_service_name, request_array);
    ROS_INFO("Ready to provide macd_array service.");
    //Services (clients)
-   std::string history_service = "/ticker_" + trade_pair_ + "_historical";
+   std::string history_service = "/ticker_" + trade_pair_ + "_history";
    ros::ServiceClient history_client = n.serviceClient<save_load_ticker::history>(history_service);
    save_load_ticker::history srv;
    srv.request.trade_pair = trade_pair_;

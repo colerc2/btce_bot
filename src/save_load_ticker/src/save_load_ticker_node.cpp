@@ -14,6 +14,7 @@
 
 std::vector<std::string> tickers_;
 std::vector<ros::Subscriber> subs_;
+std::vector<ros::ServiceServer> services_;
 std::map<std::string, std::fstream*> file_handles_;//have to keep pointers to ofstream unfortunately
 std::map<std::string, std::string> trade_pair_files_;//this will track what file is associated with what pair
 std::string base_file_;
@@ -142,8 +143,8 @@ void check_for_new_tickers(ros::NodeHandle &n){
 	tickers_.push_back(topics[i]);
      
 	//now data will be saved from this topic, so offer service to retreieve historical data
-	std::string historical_ticker_service = topics[i] + "_historical";
-	ros::ServiceServer service = n.advertiseService(historical_ticker_service, request_history);
+	std::string historical_ticker_service = topics[i] + "_history";
+	services_.push_back(n.advertiseService(historical_ticker_service, request_history));
       }
     }
   }
