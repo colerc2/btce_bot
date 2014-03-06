@@ -87,7 +87,6 @@ bool request_history(save_load_ticker::history::Request &req,
 		     save_load_ticker::history::Response &res){
   //std::string pair = req.trade_pair;
   //int num_points = req.num_points;
-  ROS_INFO("Request made");
  
   retreive_hist_from_file(req.trade_pair, req.num_points, res.num_points, res.valid_number, res.ticker);
  
@@ -96,42 +95,32 @@ bool request_history(save_load_ticker::history::Request &req,
 
 void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   ticker_publisher::ticker msg = *message;
-  ROS_INFO("Ticker callback");
 
   //construct filename
   std::string filename = base_file_ + msg.trade_pair + "/" + 
     msg.trade_pair + "_" + msg.server_time.substr(0,10) + ".tkr";
   std::replace(filename.begin(), filename.end(), '-', '_');//replace hyphens with underscores
   
-  ROS_INFO("Filename constructed");
   //create file handle
   std::fstream *file_handle;
   std::map<std::string, std::fstream*>::const_iterator it = file_handles_.find(filename);
-  ROS_INFO("Tried to find the file");
   if(it == file_handles_.end()){//need to create new file handle
-    ROS_INFO("Need to create new file");
     file_handle = new std::fstream(filename.c_str(),std::ios::app | std::ios::out);
-    ROS_INFO("Created new file");
     file_handles_[filename] = file_handle;
-    ROS_INFO("After some map call");
     trade_pair_files_[msg.trade_pair] = filename;
-    ROS_INFO("Other map call");
     //TODO: close old file, linux will get pissed once i have 1023 files
     ROS_INFO("New file handle created for pair %s: %s", msg.trade_pair.c_str(), filename.c_str());
   }else{//use old file handle
     file_handle = (file_handles_[filename]);
   }
 
-  ROS_INFO("About to write to the file");
   //save data to file
   file_mutex.lock();
   (*file_handle) << msg.high << "," << msg.low << "," << msg.avg << "," << msg.vol << "," <<
     msg.vol_cur << "," << msg.last << "," << msg.buy << "," << msg.sell << "," << msg.updated << "," <<
     msg.server_time << "\n";
-  ROS_INFO("Wrote to file, about to flush");
   file_handle->flush();//write to file each time (slower but better for when data is read later)
   file_mutex.unlock();
-  ROS_INFO("Flushed breh");
   
 }
 
