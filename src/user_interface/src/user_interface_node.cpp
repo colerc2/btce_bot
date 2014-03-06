@@ -103,6 +103,49 @@ void list_filters(){
   print_vector(print_vec);
 }
 
+void new_filter(){
+  std::string pair;
+  int short_ema, long_ema, sig_ema, period, num_old, spread_window;
+  double spread_thresh;
+  char yes_no;
+  
+  while(yes_no != 'y'){
+    std::cout << "Enter the params separated by spaces,\n";
+    std::cout << "example: btc_usd 11 25 8 10 15 40 1.25\n";
+    std::cout << "\t>";
+    
+    std::cin >> pair;
+    std::cin >> short_ema;
+    std::cin >> long_ema;
+    std::cin >> sig_ema;
+    std::cin >> period;
+    std::cin >> num_old;
+    std::cin >> spread_window;
+    std::cin >> spread_thresh;
+    
+    std::cout << "The MACD you've entered has the following parameters:\n";
+    std::cout << "\tPair: " << pair;
+    std::cout << "\tMACD(" << short_ema << "," << long_ema << "," << sig_ema << ")x" << period << std::endl;
+    std::cout << "\tPlot last " << num_old << " periods\n";
+    std::cout << "\tSpread window/thresh: " << spread_window << "/" << spread_thresh << std::endl;
+
+    std::cout << "\nIs this correct(y/n): ";
+    std::cin >> yes_no;
+  }
+
+  //start a new filter and return
+  std::string cmd = "rosrun macd_sell_signal macd_sell_signal_node _trade_pair:=" + pair + 
+    " _short:=" + std::to_string(short_ema) +
+    " _long:=" + std::to_string(long_ema) + 
+    " _sig:=" + std::to_string(sig_ema) +
+    " _period:=" + std::to_string(period) + 
+    " _num_old_periods:=" + std::to_string(num_old) +
+    " _spread_window:=" + std::to_string(spread_window) + 
+    " _spread_value:=" + std::to_string(spread_thresh);
+  std::cout << "Command to be issued: " << cmd << std::endl;
+  
+}
+
 void print_help_screen(){
   std::cout << "Available commands:" << std::endl;
   std::cout << "\th - help - display this screen" << std::endl;
@@ -123,12 +166,13 @@ int main(int argc, char** argv){
   spinner.start();
   std::string input;
   while(1){//good programming pracetice, i know
-    std::cout << "Please enter a command (h for help):";
+    std::cout << "Please enter a command (h for help): ";
     std::cin >> input;
     if(input == "h"){print_help_screen();}
     else if(input == "q"){break;}
     else if(input == "l"){list_filters();}
     else if(input == "p"){plot_filter();}
+    else if(input == "n"){new_filter();}
   }
   spinner.stop();
   
