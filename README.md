@@ -22,5 +22,9 @@ BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from 
   - Manually start a node with rosrun, here's an example:
 ```
 rosrun macd_sell_signal macd_sell_signal_node _trade_pair:="btc_usd" _short:="11" _long:="25" _sig:="8" 
-_period:="10" _num_old_periods:="15" _spread_window:="40" _spread_value:="1.25" `
+_period:="10" _num_old_periods:="15" _spread_window:="40" _spread_value:="1.25"
+```
+- To plot MACD/ticker values for a certain MACD node, run the following (change values of macd accordingly):
+```
+rosrun plot_macd plot_macd_node.py _macd_array_service:="macd_11_25_8_x10/macd_array"
 ```
