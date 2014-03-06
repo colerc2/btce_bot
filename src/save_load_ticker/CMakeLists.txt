@@ -105,16 +105,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(save_load_ticker_node src/save_load_ticker_node.cpp)
+add_executable(save_load_ticker_node src/save_load_ticker_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(save_load_ticker_node save_load_ticker_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(save_load_ticker_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(save_load_ticker_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
