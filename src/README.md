@@ -1,9 +1,9 @@
 A brief description of each of the packages, for more information, please check the README.md in the package.
 
 #### [ticker_publisher](ticker_publisher) 
-This package grabs ticker data from the btc-e site and publishes to a topic based on what the trade pair is. For example, the trade pair BTC/USD will publish on the topic /ticker_btc_usd. The message published is a custom message defined [here](ticker_publisher/msg/ticker.msg).
+This package grabs ticker data from the btc-e site and publishes to a topic based on what the trade pair is. For example, the trade pair BTC/USD will publish on the topic /ticker_btc_usd.
 - Publishers  
-  - /ticker_trade_pair - e.g. /ticker_btc_usd
+  - [/ticker_trade_pair](msg/ticker.msg) - e.g. /ticker_btc_usd
 - Subscribers - None
     
 #### [macd_sell_signal](macd_sell_signal)
