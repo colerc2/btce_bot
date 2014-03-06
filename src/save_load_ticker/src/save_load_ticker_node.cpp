@@ -8,11 +8,19 @@
 #include <algorithm>
 #include <iterator>
 #include <ticker_publisher/ticker.h>
+#include <save_load_ticker/history.h>
 
 std::vector<std::string> tickers_;
 std::vector<ros::Subscriber> subs_;
 std::map<std::string, std::fstream*> file_handles_;//have to keep pointers to ofstream unfortunately
 std::string base_file_;
+
+
+bool request_history(save_load_ticker::history::Request &req,
+		     save_load_ticker::history::Response &res){
+
+  return true;
+}
 
 void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   ticker_publisher::ticker msg = *message;
@@ -21,6 +29,8 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   std::string filename = base_file_ + msg.trade_pair + "/" + 
     msg.trade_pair + "_" + msg.server_time.substr(0,10) + ".tkr";
   std::replace(filename.begin(), filename.end(), '-', '_');//replace hyphens with underscores
+  
+  //create file handle, check
   std::fstream *file_handle;
   std::map<std::string, std::fstream*>::const_iterator it = file_handles_.find(filename);
   if(it == file_handles_.end()){//need to create new file handle
@@ -55,17 +65,23 @@ void check_for_new_tickers(ros::NodeHandle &n){
   while( fgets (line, sizeof line, cmd_output)){
     topics.push_back(line);
   }
-  //loop through and subscribe to all of the sell topics
+  //loop through and subscribe to all of the ticker topics
   for(int i = 0; i < topics.size(); i++){
     topics[i].erase(0, topics[i].find_first_not_of('\n'));
     topics[i].erase(topics[i].find_last_not_of('\n')+1); 
-    //all sell topics will begin with "/ticker_"
+    
+    //all ticker topics will begin with "/ticker_"
     if(topics[i].substr(0,8) == "/ticker_"){
+
       //if not subscribed to this one, subscribe to it
       if(std::find(tickers_.begin(), tickers_.end(), topics[i]) == tickers_.end()){
 	ROS_INFO("subscribing to %s", topics[i].c_str());
 	subs_.push_back(n.subscribe(topics[i], 1, ticker_callback));
 	tickers_.push_back(topics[i]);
+     
+	//now data will be saved from this topic, so offer service to retreieve historical data
+	std::string historical_ticker_service = topics[i] + "_historical";
+	ros::ServiceServer service = n.advertiseService(historical_ticker_service, request_history);
       }
     }
   }
@@ -80,10 +96,11 @@ int main(int argc, char** argv){
   //TODO:make this a param
   base_file_ = "/home/bob/Documents/btce_bot/ticker_data/";
 
-  ROS_INFO("Checking for new tickers");
+  //Subscribers
   //check to see what tickers are running, populate vector
   check_for_new_tickers(n);
 
+  //go into loop
   ros::Rate rate(1);
   //only use one thread for callbacks for now
   ros::AsyncSpinner spinner(1);

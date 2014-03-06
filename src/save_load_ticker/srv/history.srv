@@ -1,0 +1,6 @@
+int64 num_points
+string trade_pair
+---
+int64 num_points
+int64 valid_number
+float64[] points
