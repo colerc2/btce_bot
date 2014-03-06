@@ -10,7 +10,7 @@ This package subscribes to a ticker topic and publishes a sell signal which is a
 - Services (Server)
   - [/macd_short_long_sig_xperiod/macd_array](macd_sell_signal/srv/macd_array.srv) -   e.g. macd_12_26_9_x10/macd_array
 - Services (Client)
-  - [/ticker_trade_pair_history](save_load_ticker/msg/history.msg)
+  - [/ticker_trade_pair_history](save_load_ticker/msg/history.srv)
 
 #### [plot_macd](plot_macd)
 This package makes a request via a service every 5 seconds to receive the latest MACD/ticker data from the macd_sell_signal package. It then uses matplotlib to provide a graphical display of EMAs, MACD lines and current price.
