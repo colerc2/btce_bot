@@ -13,6 +13,6 @@ BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from 
   - Run *source devel/setup.bash* command
 
 ###Examples
--To launch the ticker/data collector run *roslaunch launch/ticker.launch*  
+- To launch the ticker/data collector run *roslaunch launch/ticker.launch*  
   - This will publish the following trade pairs to topics: btc_usd, btc_ltc, ltc_usd  
   - To change these values simple add another node in the [ticker.launch](launch/ticker.launch) file
