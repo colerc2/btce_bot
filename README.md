@@ -4,7 +4,7 @@ btce_bot
 BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from [the following repo](https://github.com/alanmcintyre/btce-api). Below is a list of each of the packages in /src and a brief description.
 
 #### [ticker_publisher](src/ticker_publisher) 
-This package grabs ticker data from the btc-e site and publishes to a topic based on what the trade pair is. For example, the trade pair BTC/USD will publish on the topic /ticker_btc_usd. The message published is a custom message defined [here](src/publish_ticker/msg/ticker.msg).
+This package grabs ticker data from the btc-e site and publishes to a topic based on what the trade pair is. For example, the trade pair BTC/USD will publish on the topic /ticker_btc_usd. The message published is a custom message defined [here](src/ticker_publisher/msg/ticker.msg).
 - Publishers  
   - /ticker_trade_pair - e.g. /ticker_btc_usd
 - Subscribers - None
