@@ -5,7 +5,6 @@ project(save_load_ticker)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  macd_sell_signal
   roscpp
   rospy
   std_msgs
@@ -69,6 +68,7 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  ticker_publisher
   std_msgs
 )
 
@@ -84,7 +84,7 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES save_load_ticker
- CATKIN_DEPENDS macd_sell_signal roscpp rospy std_msgs ticker_publisher message_runtime
+ CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher message_runtime
 #  DEPENDS system_lib
 )
 

@@ -7,6 +7,7 @@
 #include "macd_sell_signal/macd.h"//macd msg
 #include "macd_sell_signal/sell.h"
 #include "macd_sell_signal/macd_array.h"//macd array service
+#include "save_load_ticker/history.h"
 
 //passed by reference to the macd_indicator object
 double short_emaf_line_, long_emaf_line_, macd_line_, signal_line_, macd_hist_;
@@ -97,7 +98,7 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &msg){
   macd_pub_.publish(macd_msg);
 
   //pop front, push back (always save at least the last hour of data)
-  if(old_points_.size() > std::max(num_old_periods_*period_,3600)){
+  while(old_points_.size() > std::max(num_old_periods_*period_,3600)){
     old_points_.erase(old_points_.begin());
   }
   old_points_.push_back(macd_msg);
@@ -111,6 +112,29 @@ bool request_array(macd_sell_signal::macd_array::Request &req,
   res.macd_array = old_points_;
 
   return true;
+}
+
+void read_in_history(std::vector<ticker_publisher::ticker> &ticker){
+  macd_sell_signal::macd macd_msg;
+  for(int i = 0; i < ticker.size(); i++){
+    macd_.update(ticker[i].last, short_emaf_line_, long_emaf_line_, macd_line_, signal_line_, macd_hist_);
+
+    //publish MACD info for current time
+    macd_sell_signal::macd macd_msg;
+    //header
+    macd_msg.header.stamp = ros::Time::now();
+    //save ticker values
+    macd_msg.tick = ticker[i];
+    //macd stuff
+    macd_msg.short_emaf = short_emaf_line_;
+    macd_msg.long_emaf = long_emaf_line_;
+    macd_msg.macd = macd_line_;
+    macd_msg.signal = signal_line_;
+    macd_msg.macd_hist = macd_hist_;
+    
+    old_points_.push_back(macd_msg);
+  }
+
 }
 
 int main(int argc, char** argv){
@@ -129,6 +153,31 @@ int main(int argc, char** argv){
   nh.param("spread_window", spread_window_, 0);
   nh.param("spread_value", spread_value_, 0.0);
 
+   //intialize globals
+   macd_ = macd_indicator(short_, long_, sig_, period_);
+
+   //Services (servers)
+   std::string macd_array_service_name = "macd_" + std::to_string(short_) + 
+     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
+     "_x" + std::to_string(period_) + "/macd_array";
+   ros::ServiceServer macd_array_service = n.advertiseService(macd_array_service_name, request_array);
+   ROS_INFO("Ready to provide macd_array service.");
+   //Services (clients)
+   std::string history_service = "/ticker_" + trade_pair_ + "_historical";
+   ros::ServiceClient history_client = n.serviceClient<save_load_ticker::history>(history_service);
+   save_load_ticker::history srv;
+   srv.request.trade_pair = trade_pair_;
+   srv.request.num_points = std::max(num_old_periods_*period_,3600);
+   if (history_client.call(srv))
+   {
+     read_in_history(srv.response.ticker);
+   }
+   else
+   {
+     ROS_ERROR("Failed to call service /ticker_%s_history", trade_pair_.c_str());
+     return 1;
+   }
+
   //Subscribers
   //construct topic name from trade_pair_ string
   std::string ticker_topic = "ticker_" + trade_pair_;
@@ -146,18 +195,8 @@ int main(int argc, char** argv){
     "_x" + std::to_string(period_) + "/sell";
   sell_pub_ = n.advertise<macd_sell_signal::sell>(sell_topic, 10);
 
-  
-  //Services
-  std::string macd_array_service = "macd_" + std::to_string(short_) + 
-    "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
-    "_x" + std::to_string(period_) + "/macd_array";
-  ros::ServiceServer service = n.advertiseService(macd_array_service, request_array);
-  ROS_INFO("Ready to provide macd_array service.");
 
-  //intialize globals
-  macd_ = macd_indicator(short_, long_, sig_, period_);
- 
- 
+
   //
   ros::Rate rate(100);
   //only use one thread for callbacks, that was the service never responds

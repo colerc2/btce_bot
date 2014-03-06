@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   ticker_publisher
+  save_load_ticker
   message_generation
 )
 
@@ -87,7 +88,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES macd_indicator
-  CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher save_load_ticker message_runtime
 #  DEPENDS system_lib
 )
 
