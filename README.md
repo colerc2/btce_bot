@@ -19,3 +19,7 @@ A list of each of the packages in /src and a brief description
     a service that allows a node to ask for previous macd values. This is mostly used so the plotting
     node can ask for historical data and plot at it's leisure instead of publishing all of this data to
     a topic.
+        Publishers  -   /macd_short_long_sig_xperiod/macd   -   e.g. macd_12_26_9_x10/macd
+                        /macd_short_long_sig_xperiod/sell   -   e.g. macd_12_26_9_x10/sell
+        Subscribers -   /ticker_trade_pair
+        Services    -   /macd_short_long_sig_xperiod/macd_array -   e.g. macd_12_26_9_x10/macd_array
