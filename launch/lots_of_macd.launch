@@ -1,7 +1,7 @@
 <launch>
 
   <node pkg="macd_sell_signal" type="macd_sell_signal_node" name="macd_sell_signal_node_1" output="screen">
-    <param name="trade_pair" value="btc_usd"/>
+    <param name="trade_pair" value="ltc_usd"/>
     <param name="short" value="11"/>
     <param name="long" value="25"/>
     <param name="sig" value="8"/>

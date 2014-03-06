@@ -10,6 +10,7 @@
 #include <sstream>
 #include <ticker_publisher/ticker.h>
 #include <save_load_ticker/history.h>
+#include <mutex>
 
 
 std::vector<std::string> tickers_;
@@ -18,9 +19,11 @@ std::vector<ros::ServiceServer> services_;
 std::map<std::string, std::fstream*> file_handles_;//have to keep pointers to ofstream unfortunately
 std::map<std::string, std::string> trade_pair_files_;//this will track what file is associated with what pair
 std::string base_file_;
+std::mutex file_mutex;
 
 //TODO: make this more sophisticated, i.e. if there aren't enough points in current file, go back to previous days file
 void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &num_points, int &valid_number, std::vector<ticker_publisher::ticker> &points){
+  
   std::map<std::string, std::string>::const_iterator it = trade_pair_files_.find(trade_pair);
   if(it == trade_pair_files_.end()){
     num_points = 0;
@@ -30,6 +33,7 @@ void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &
     valid_number = 0;
     //open file for input
     std::ifstream input_file;
+    file_mutex.lock();
     input_file.open(trade_pair_files_[trade_pair].c_str());
     std::string temp;
     while(std::getline(input_file,temp)){
@@ -68,6 +72,8 @@ void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &
 	num_points++;
       }
     }
+    input_file.close();
+    file_mutex.unlock();
     //TODO: make this more efficient
     while(points.size() > num_points_req){
       points.erase(points.begin());
@@ -81,6 +87,7 @@ bool request_history(save_load_ticker::history::Request &req,
 		     save_load_ticker::history::Response &res){
   //std::string pair = req.trade_pair;
   //int num_points = req.num_points;
+  ROS_INFO("Request made");
  
   retreive_hist_from_file(req.trade_pair, req.num_points, res.num_points, res.valid_number, res.ticker);
  
@@ -89,31 +96,42 @@ bool request_history(save_load_ticker::history::Request &req,
 
 void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   ticker_publisher::ticker msg = *message;
-  
+  ROS_INFO("Ticker callback");
+
   //construct filename
   std::string filename = base_file_ + msg.trade_pair + "/" + 
     msg.trade_pair + "_" + msg.server_time.substr(0,10) + ".tkr";
   std::replace(filename.begin(), filename.end(), '-', '_');//replace hyphens with underscores
   
-  //create file handle, check
+  ROS_INFO("Filename constructed");
+  //create file handle
   std::fstream *file_handle;
   std::map<std::string, std::fstream*>::const_iterator it = file_handles_.find(filename);
+  ROS_INFO("Tried to find the file");
   if(it == file_handles_.end()){//need to create new file handle
+    ROS_INFO("Need to create new file");
     file_handle = new std::fstream(filename.c_str(),std::ios::app | std::ios::out);
+    ROS_INFO("Created new file");
     file_handles_[filename] = file_handle;
+    ROS_INFO("After some map call");
     trade_pair_files_[msg.trade_pair] = filename;
+    ROS_INFO("Other map call");
     //TODO: close old file, linux will get pissed once i have 1023 files
     ROS_INFO("New file handle created for pair %s: %s", msg.trade_pair.c_str(), filename.c_str());
   }else{//use old file handle
     file_handle = (file_handles_[filename]);
   }
 
+  ROS_INFO("About to write to the file");
   //save data to file
+  file_mutex.lock();
   (*file_handle) << msg.high << "," << msg.low << "," << msg.avg << "," << msg.vol << "," <<
     msg.vol_cur << "," << msg.last << "," << msg.buy << "," << msg.sell << "," << msg.updated << "," <<
     msg.server_time << "\n";
+  ROS_INFO("Wrote to file, about to flush");
   file_handle->flush();//write to file each time (slower but better for when data is read later)
-  
+  file_mutex.unlock();
+  ROS_INFO("Flushed breh");
   
 }
 
@@ -128,6 +146,7 @@ void check_for_new_tickers(ros::NodeHandle &n){
   while( fgets (line, sizeof line, cmd_output)){
     topics.push_back(line);
   }
+  pclose(cmd_output);//shit gets pretty walking dead up in here without this line
   //loop through and subscribe to all of the ticker topics
   for(int i = 0; i < topics.size(); i++){
     topics[i].erase(0, topics[i].find_first_not_of('\n'));
