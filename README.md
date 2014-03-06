@@ -7,7 +7,7 @@ BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from 
 
 -You'll first have to install the python BTC-e API (link to repo above)  
 -Install [ROS](http://www.ros.org/install/)  
-  - Project was written on Ubuntu 12.04 using ROS Hydro
+  - Project was written on Ubuntu 12.04 using ROS Hydro  
 -cd to btce_bot directory  
   - Run "catkin_make" command
   - Run "source devel/setup.bash" command
