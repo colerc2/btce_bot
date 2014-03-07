@@ -80,10 +80,12 @@ void plot_filter(){
     std::cout << "Invalid number chosen, exiting plotting subroutine\n";
     return;
   }
+  //be sure to redirect stdout and stderr so that when program is killed error output is suppressed
   std::cout << "Ctrl+c to quit plot program" << std::endl;
-  cmd = "rosrun plot_macd plot_macd_node.py _macd_array_service:=" + array_topics[which_to_plot];
+  cmd = "rosrun plot_macd plot_macd_node.py _macd_array_service:=" + array_topics[which_to_plot] + " > /dev/null 2>&1";
   topics.clear();
   call_command(cmd, topics);
+  std::cout << std::endl;
   
 }
 
