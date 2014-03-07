@@ -41,3 +41,6 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
   - [/ticker_trade_pair](ticker_publisher/msg/ticker.msg) - e.g. /ticker_btc_usd
 - Subscribers - None
 - Services(Server/Client) - None
+
+#### [user_interface](user_interface)
+This package provides a convienient command line utility to start new MACD topics and show plots.
