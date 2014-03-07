@@ -130,8 +130,30 @@ void list_filters(){
 }
 
 void sell_history_routine(std::vector<macd_sell_signal::sell> sells){
+  std::cout << "There are currently " << sells.size() << " sells on record.\n";
+  
 
+}
 
+void kill_all_macd_nodes(){
+  //get a list of the current node names
+  std::string node_list_cmd = "rosnode list";
+  std::vector<std::string> node_names;
+  call_command(node_list_cmd, node_names);
+  //trim newline chars
+  for(int i = 0; i < node_names.size(); i++){
+    node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
+    node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
+    
+    std::vector<std::string> throwaway_vector;//we don't care about output from "rosnode kill"
+    //is it a macd node?
+    if(node_names[i].substr(0,22) == "/macd_sell_signal_node"){
+      std::string kill_cmd = "rosnode kill " + node_names[i];
+      std::cout << kill_cmd;
+      call_command(kill_cmd, throwaway_vector);
+      std::cout << " ...Success!" << std::endl;
+    }
+  }
 }
 
 bool new_filter(){
@@ -259,6 +281,8 @@ int main(int argc, char** argv){
 	ROS_ERROR("Failed to call service /sell_history");
 	return 1;
       }
+    }else if(input == "killall"){
+      kill_all_macd_nodes();
     }
   }
   spinner.stop();

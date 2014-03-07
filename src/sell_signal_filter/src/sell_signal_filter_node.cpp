@@ -28,8 +28,11 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   //add sell to vector of sells
   sells_.push_back(*msg);
 
+  //copy msg using assignment operator!? NOT SURE IF WANT OR NEED
+  macd_sell_signal::sell tmp_msg = *msg;
+  
   //publish this same sell to the real sell topic if we decide it's valid
-  sell_pub_.publish(*msg);
+  sell_pub_.publish(tmp_msg);
   
 }
 
