@@ -45,8 +45,12 @@ void plot_filter(){
       array_topics.push_back(topics[i]+"_array");
       std::stringstream ss(topics[i]);
       std::string item;
-      std::string push_to_print("MACD(");
+      std::string push_to_print;
       std::getline(ss, item, '_');
+      std::getline(ss, item, '_');
+      push_to_print = item + "_";
+      std::getline(ss, item, '_');
+      push_to_print = push_to_print + item + "-->MACD(";
       std::getline(ss, item, '_');
       push_to_print = push_to_print + item + ",";
       std::getline(ss, item, '_');
@@ -70,9 +74,11 @@ void plot_filter(){
   }
   print_vector(print_vec);
   int which_to_plot = -1;
-  while((which_to_plot < 0) || (which_to_plot >= array_topics.size())){
-    std::cout << "Choose one of the numbers to plot: ";
-    std::cin >> which_to_plot;
+  std::cout << "Choose one of the numbers to plot: ";
+  std::cin >> which_to_plot;
+  if((which_to_plot < 0) || (which_to_plot >= array_topics.size())){
+    std::cout << "Invalid number chosen, exiting plotting subroutine\n";
+    return;
   }
   std::cout << "Ctrl+c to quit plot program" << std::endl;
   cmd = "rosrun plot_macd plot_macd_node.py _macd_array_service:=" + array_topics[which_to_plot];
@@ -96,8 +102,12 @@ void list_filters(){
        (topics[i].substr(topics[i].size()-4, topics[i].size()) == "macd")){
       std::stringstream ss(topics[i]);
       std::string item;
-      std::string push_to_print("MACD(");
+      std::string push_to_print;
       std::getline(ss, item, '_');
+      std::getline(ss, item, '_');
+      push_to_print = item + "_";
+      std::getline(ss, item, '_');
+      push_to_print = push_to_print + item + "-->MACD(";
       std::getline(ss, item, '_');
       push_to_print = push_to_print + item + ",";
       std::getline(ss, item, '_');
@@ -141,9 +151,32 @@ bool new_filter(){
     std::cout << "\nIs this correct(y/n): ";
     std::cin >> yes_no;
   }
-
-  //start a new filter and return
-  std::string cmd = "rosrun macd_sell_signal macd_sell_signal_node _trade_pair:=" + pair + 
+  
+  //get a list of the current node names
+  std::string node_list_cmd = "rosnode list";
+  std::vector<std::string> node_names;
+  call_command(node_list_cmd, node_names);
+  std::string new_node_name;
+  int node_counter = 1;
+  //trim newline chars
+  for(int i = 0; i < node_names.size(); i++){
+    node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
+    node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
+  }
+  
+  //find next available node name
+  while(1){
+    std::string temp = "/macd_sell_signal_node_" + std::to_string(node_counter);
+    if((std::find(node_names.begin(), node_names.end(), temp) == node_names.end())){
+      new_node_name = "macd_sell_signal_node_" + std::to_string(node_counter);
+      break;
+    }
+    node_counter++;
+  }
+  
+  //construct the rosrun command
+  std::string cmd = "rosrun macd_sell_signal macd_sell_signal_node __name:=" + 
+    new_node_name + " _trade_pair:=" + pair + 
     " _short:=" + std::to_string(short_ema) +
     " _long:=" + std::to_string(long_ema) + 
     " _sig:=" + std::to_string(sig_ema) +
@@ -151,10 +184,9 @@ bool new_filter(){
     " _num_old_periods:=" + std::to_string(num_old) +
     " _spread_window:=" + std::to_string(spread_window) + 
     " _spread_value:=" + std::to_string(spread_thresh);
-  //std::cout << "Command to be issued: " << cmd << std::endl;
 
 
-  //TODO - set the name of the node?
+  //fork this process and then fork again to ensure grandchild does it's thang
   int pid = fork();
   if(pid == 0){
     setsid();
@@ -168,7 +200,7 @@ bool new_filter(){
   }else{
     usleep(1000000);
     std::cout << "MACD node started\n";
-    //waitpid(pid, NULL, 0);
+    //waitpid(pid, NULL, 0);//still don't know why this doesn't work, oh well
   }
   return false;
 }

@@ -157,7 +157,7 @@ int main(int argc, char** argv){
    macd_ = macd_indicator(short_, long_, sig_, period_);
 
    //Services (servers)
-   std::string macd_array_service_name = "macd_" + std::to_string(short_) + 
+   std::string macd_array_service_name = "macd_" + trade_pair_ + "_" + std::to_string(short_) + 
      "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
      "_x" + std::to_string(period_) + "/macd_array";
    ros::ServiceServer macd_array_service = n.advertiseService(macd_array_service_name, request_array);
@@ -185,12 +185,12 @@ int main(int argc, char** argv){
 
   //Publishers
   //macd topic
-  std::string macd_topic = "macd_" + std::to_string(short_) + 
+  std::string macd_topic = "macd_" + trade_pair_ + "_" + std::to_string(short_) + 
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_) + "/macd";
   macd_pub_ = n.advertise<macd_sell_signal::macd>(macd_topic, 10);
   //sell topic
-  std::string sell_topic = "macd_" + std::to_string(short_) + 
+  std::string sell_topic = "macd_" + trade_pair_ + "_" + std::to_string(short_) + 
     "_" + std::to_string(long_) + "_" + std::to_string(sig_) +
     "_x" + std::to_string(period_) + "/sell";
   sell_pub_ = n.advertise<macd_sell_signal::sell>(sell_topic, 10);
