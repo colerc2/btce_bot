@@ -86,7 +86,7 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES sell_signal_filter
- CATKIN_DEPENDS roscpp rospy  macd_sell_signal ticker_publisher std_msgs
+ CATKIN_DEPENDS roscpp rospy  macd_sell_signal ticker_publisher std_msgs message_runtime
 #  DEPENDS system_lib
 )
 

@@ -8,6 +8,11 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <macd_sell_signal/sell.h>
+#include <macd_sell_signal/macd.h>
+#include <ticker_publisher/ticker.h>
+#include <sell_signal_filter/history.h>
+
 
 void print_vector(std::vector<std::string> &print_me){
   std::copy(print_me.begin(),
@@ -124,6 +129,11 @@ void list_filters(){
   print_vector(print_vec);
 }
 
+void sell_history_routine(std::vector<macd_sell_signal::sell> sells){
+
+
+}
+
 bool new_filter(){
   std::string pair;
   int short_ema, long_ema, sig_ema, period, num_old, spread_window;
@@ -221,6 +231,10 @@ int main(int argc, char** argv){
   ros::NodeHandle n;
   ros::NodeHandle nh("~");
 
+  //Services(clients)
+  std::string sell_history_service_name = "sell_history";
+  ros::ServiceClient sell_history_client = n.serviceClient<sell_signal_filter::history>(sell_history_service_name);
+  sell_signal_filter::history srv;
 
   ros::Rate rate(100);
   //use a seperate thread for callbacks, might do something with current thread later
@@ -237,6 +251,13 @@ int main(int argc, char** argv){
     else if(input == "n"){
       if(new_filter()){
 	break;
+      }
+    }else if(input == "s"){
+      if(sell_history_client.call(srv)){
+	sell_history_routine(srv.response.history);
+      }else{
+	ROS_ERROR("Failed to call service /sell_history");
+	return 1;
       }
     }
   }
