@@ -163,12 +163,14 @@ bool new_filter(){
       std::system(cmd.c_str());
       exit(0);
     }
-    exit(0);
+    return true;
+    //exit(0);
   }else{
     usleep(1000000);
     std::cout << "MACD node started\n";
-    waitpid(pid, NULL, 0);
+    //waitpid(pid, NULL, 0);
   }
+  return false;
 }
 
 void print_help_screen(){
@@ -198,7 +200,11 @@ int main(int argc, char** argv){
     else if(input == "q"){break;}
     else if(input == "l"){list_filters();}
     else if(input == "p"){plot_filter();}
-    else if(input == "n"){new_filter();}
+    else if(input == "n"){
+      if(new_filter()){
+	break;
+      }
+    }
   }
   spinner.stop();
   
