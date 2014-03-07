@@ -158,11 +158,11 @@ bool new_filter(){
   int pid = fork();
   if(pid == 0){
     setsid();
-    //int pid_2 = fork();
-    //if(pid_2 == 0){
+    int pid_2 = fork();
+    if(pid_2 == 0){
       std::system(cmd.c_str());
-      //exit(0);
-      //}
+      exit(0);
+    }
     exit(0);
   }else{
     usleep(1000000);
