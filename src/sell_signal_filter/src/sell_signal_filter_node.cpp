@@ -12,18 +12,32 @@
 #include <macd_sell_signal/sell.h>
 #include <macd_sell_signal/macd.h>
 #include <ticker_publisher/ticker.h>
+#include <sell_signal_filter/history.h>
 
 std::vector<macd_sell_signal::sell> sells_;
+ros::Publisher sell_pub_;
 
 void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   //check if sell should actually happen here
   ROS_INFO("Sell signal callback in sell filter");
   
+  /*for now, we just pass every sell signal through
+    TODO: filter these signals, check btce health,
+    basically make sure that we really do want to sell*/
 
   //add sell to vector of sells
   sells_.push_back(*msg);
+
+  //publish this same sell to the real sell topic if we decide it's valid
+  sell_pub_.publish(*msg);
+  
 }
 
+bool request_sell_history(sell_signal_filter::history::Request &req,
+			  sell_signal_filter::history::Response &res){
+  res.history = sells_;
+  return true;
+}
 
 int main(int argc, char** argv){
   ros::init(argc, argv, "sell_signal_filter_node");
@@ -54,6 +68,14 @@ int main(int argc, char** argv){
       subscribers.push_back(n.subscribe(topics[i], 1, sell_callback));
     }
   }
+
+  //Publishers
+  std::string sell_topic = "sell";
+  sell_pub_ = n.advertise<macd_sell_signal::macd>(sell_topic, 10);
+
+  //Services(servers)
+  std::string sell_history_service_name = "sell_history";
+  ros::ServiceServer sell_history_service = n.advertiseService(sell_history_service_name, request_sell_history);
 
   ros::Rate rate(100);
   //use a seperate thread for callbacks, might do something with current thread later
