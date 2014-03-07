@@ -129,7 +129,7 @@ void list_filters(){
   print_vector(print_vec);
 }
 
-void sell_history_routine(std::vector<macd_sell_signal::sell> sells){
+void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   std::cout << "There are currently " << sells.size() << " sells on record.\n";
   
 
