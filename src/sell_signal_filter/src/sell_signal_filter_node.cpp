@@ -16,6 +16,8 @@
 
 std::vector<macd_sell_signal::sell> sells_;
 ros::Publisher sell_pub_;
+std::vector<ros::Subscriber> subscribers_;
+std::vector<std::string> subscriber_names_;
 
 void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   //check if sell should actually happen here
@@ -36,6 +38,34 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   
 }
 
+void check_for_new_sell_signals(ros::NodeHandle &n){
+  //call rostopic list
+  std::string cmd = "rostopic list";
+  FILE * cmd_output = popen(cmd.c_str(), "r");
+
+  //put this crap in a vector
+  std::vector<std::string> topics;
+  char line[128];
+  while( fgets (line, sizeof line, cmd_output)){
+    topics.push_back(line);
+  }
+  //loop through and subscribe to all of the sell topics
+  for(int i = 0; i < topics.size(); i++){
+    topics[i].erase(0, topics[i].find_first_not_of('\n'));
+    topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    //all sell topics will begin with "/macd" and end with _sell
+    if((topics[i].substr(0,5) == "/macd") &&
+       (topics[i].substr(topics[i].size()-4, topics[i].size()) == "sell")){
+      if(std::find(subscriber_names_.begin(),
+		   subscriber_names_.end(), topics[i]) == subscriber_names_.end()){
+	subscribers_.push_back(n.subscribe(topics[i], 1, sell_callback));
+	subscriber_names_.push_back(topics[i]);
+	ROS_INFO("Sell filter subscribed to: %s", topics[i].c_str());
+      }
+    }
+  }
+}
+
 bool request_sell_history(sell_signal_filter::history::Request &req,
 			  sell_signal_filter::history::Response &res){
   res.history = sells_;
@@ -50,41 +80,23 @@ int main(int argc, char** argv){
   //sleep for a few seconds, give topics time to start publishing
   usleep(1000000);
   
-  //call rostopic list
-  std::string cmd = "rostopic list";
-  FILE * cmd_output = popen(cmd.c_str(), "r");
-
-  //put this crap in a vector
-  std::vector<std::string> topics;
-  char line[128];
-  while( fgets (line, sizeof line, cmd_output)){
-    topics.push_back(line);
-  }
-  std::vector<ros::Subscriber> subscribers;
-  //loop through and subscribe to all of the sell topics
-  for(int i = 0; i < topics.size(); i++){
-    topics[i].erase(0, topics[i].find_first_not_of('\n'));
-    topics[i].erase(topics[i].find_last_not_of('\n')+1); 
-    //all sell topics will begin with "/macd" and end with _sell
-    if((topics[i].substr(0,5) == "/macd") &&
-       (topics[i].substr(topics[i].size()-4, topics[i].size()) == "sell")){
-      subscribers.push_back(n.subscribe(topics[i], 1, sell_callback));
-    }
-  }
+  //subscribers
+  check_for_new_sell_signals(n);
 
   //Publishers
   std::string sell_topic = "sell";
-  sell_pub_ = n.advertise<macd_sell_signal::macd>(sell_topic, 10);
+  sell_pub_ = n.advertise<macd_sell_signal::sell>(sell_topic, 10);
 
   //Services(servers)
   std::string sell_history_service_name = "sell_history";
   ros::ServiceServer sell_history_service = n.advertiseService(sell_history_service_name, request_sell_history);
 
-  ros::Rate rate(100);
+  ros::Rate rate(0.1);//check for new topics every 10 seconds
   //use a seperate thread for callbacks, might do something with current thread later
   ros::AsyncSpinner spinner(1);
   spinner.start();
   while(ros::ok()){
+    check_for_new_sell_signals(n);
     rate.sleep();
   }
   spinner.stop();

@@ -151,7 +151,7 @@ void kill_all_macd_nodes(){
       std::string kill_cmd = "rosnode kill " + node_names[i];
       std::cout << kill_cmd;
       call_command(kill_cmd, throwaway_vector);
-      std::cout << " ...Success!" << std::endl;
+      std::cout << "...Success!" << std::endl;
     }
   }
 }

@@ -202,7 +202,7 @@ int main(int argc, char** argv){
   check_for_new_tickers(n);
 
   //go into loop
-  ros::Rate rate(1);
+  ros::Rate rate(0.1);//check for new tickers every 10 seconds
   //only use one thread for callbacks for now
   ros::AsyncSpinner spinner(1);
   spinner.start();

@@ -64,6 +64,7 @@ void check_if_should_sell(){
 	  rit++){
       if(rit->macd_hist > spread_value_){
 	ROS_INFO("We got a sell signal from MACD(%d,%d,%d)x%d,%d,thresh=%lf",short_,long_,sig_,period_,spread_window_,spread_value_);
+	break;
 	sell_signal = true;
       }
       counter++;
