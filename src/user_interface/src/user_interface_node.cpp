@@ -5,6 +5,9 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/wait.h>
 
 void print_vector(std::vector<std::string> &print_me){
   std::copy(print_me.begin(),
@@ -26,7 +29,6 @@ void call_command(std::string &cmd, std::vector<std::string> &lines){
 
 
 void plot_filter(){
-  std::cout << "Here's a list of the current MACD topics and an associated number:" << std::endl;
   std::string cmd = "rostopic list";
   std::vector<std::string> topics;
   std::vector<std::string> print_vec;
@@ -56,6 +58,13 @@ void plot_filter(){
       print_vec.push_back(push_to_print);
     }
   }
+  
+  if(print_vec.size() == 0){
+    std::cout << "Sorry, there's no MACD topics available to plot yet\n";
+    return;
+  }
+  std::cout << "Here's a list of the current MACD topics and an associated number:" << std::endl;
+
   for(int i = 0; i < print_vec.size(); i++){
     print_vec[i] = std::to_string(i) + " - " + print_vec[i];
   }
@@ -103,7 +112,7 @@ void list_filters(){
   print_vector(print_vec);
 }
 
-void new_filter(){
+bool new_filter(){
   std::string pair;
   int short_ema, long_ema, sig_ema, period, num_old, spread_window;
   double spread_thresh;
@@ -142,8 +151,24 @@ void new_filter(){
     " _num_old_periods:=" + std::to_string(num_old) +
     " _spread_window:=" + std::to_string(spread_window) + 
     " _spread_value:=" + std::to_string(spread_thresh);
-  std::cout << "Command to be issued: " << cmd << std::endl;
-  
+  //std::cout << "Command to be issued: " << cmd << std::endl;
+
+
+  //TODO - set the name of the node?
+  int pid = fork();
+  if(pid == 0){
+    setsid();
+    //int pid_2 = fork();
+    //if(pid_2 == 0){
+      std::system(cmd.c_str());
+      //exit(0);
+      //}
+    exit(0);
+  }else{
+    usleep(1000000);
+    std::cout << "MACD node started\n";
+    waitpid(pid, NULL, 0);
+  }
 }
 
 void print_help_screen(){
@@ -152,6 +177,7 @@ void print_help_screen(){
   std::cout << "\tq - quit - exit user interface" << std::endl;
   std::cout << "\tl - list current filters and associated params" << std::endl;
   std::cout << "\tp - plot one of the macd filters" << std::endl;
+  std::cout << "\tn - new MACD filter" << std::endl;
 }
 
 int main(int argc, char** argv){

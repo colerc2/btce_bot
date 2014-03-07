@@ -21,9 +21,22 @@ std::map<std::string, std::string> trade_pair_files_;//this will track what file
 std::string base_file_;
 std::mutex file_mutex;
 
+void call_command(std::string &cmd, std::vector<std::string> &lines){
+  FILE * cmd_output = popen(cmd.c_str(), "r");
+  
+  //put this crap in a vector
+  char line[256];
+  while( fgets (line, sizeof line, cmd_output)){
+    lines.push_back(line);
+  }
+  pclose(cmd_output);//shit gets pretty walking dead up in here without this line
+}
+
+
 //TODO: make this more sophisticated, i.e. if there aren't enough points in current file, go back to previous days file
 void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &num_points, int &valid_number, std::vector<ticker_publisher::ticker> &points){
-  
+
+  //first check to make sure there is a file for this day
   std::map<std::string, std::string>::const_iterator it = trade_pair_files_.find(trade_pair);
   if(it == trade_pair_files_.end()){
     num_points = 0;
@@ -31,20 +44,37 @@ void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &
   }else{
     num_points = 0;
     valid_number = 0;
+    
+    //get line count, we'll skip a bunch of lines to save cpu time
+    std::string cmd = "wc -l " + trade_pair_files_[trade_pair];
+    std::vector<std::string> lines;
+    int num_lines_in_file; 
+    call_command(cmd, lines);
+    std::stringstream num_lines_ss(lines[0]);
+    num_lines_ss >> num_lines_in_file;
+    //calculate the line number we'll start at
+    int start_point = std::max(0, num_lines_in_file-num_points_req-5);//-5 just because
+
     //open file for input
     std::ifstream input_file;
     file_mutex.lock();
     input_file.open(trade_pair_files_[trade_pair].c_str());
     std::string temp;
+    int lines_gotten = 0;
     while(std::getline(input_file,temp)){
+      if(lines_gotten < start_point){
+	lines_gotten++;
+	continue;
+      }
       //make sure we have the right number of commas
       if(std::count(temp.begin(), temp.end(), ',') == 9){
 	//TODO: might need to do some checking here for partial lines
 	std::stringstream ss(temp);
 	std::string item;
-	int counter = 0;
 
 	ticker_publisher::ticker tmp;
+	ss >> tmp.high;
+	
 	std::getline(ss, item, ',');
 	tmp.high = atof(item.c_str());
 	std::getline(ss, item, ',');
@@ -74,7 +104,7 @@ void retreive_hist_from_file(std::string &trade_pair, int &num_points_req, int &
     }
     input_file.close();
     file_mutex.unlock();
-    //TODO: make this more efficient
+    //trim off any extra
     while(points.size() > num_points_req){
       points.erase(points.begin());
       valid_number--;
@@ -102,6 +132,7 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   std::replace(filename.begin(), filename.end(), '-', '_');//replace hyphens with underscores
   
   //create file handle
+  file_mutex.lock();
   std::fstream *file_handle;
   std::map<std::string, std::fstream*>::const_iterator it = file_handles_.find(filename);
   if(it == file_handles_.end()){//need to create new file handle
@@ -115,7 +146,6 @@ void ticker_callback(const ticker_publisher::ticker::ConstPtr &message){
   }
 
   //save data to file
-  file_mutex.lock();
   (*file_handle) << msg.high << "," << msg.low << "," << msg.avg << "," << msg.vol << "," <<
     msg.vol_cur << "," << msg.last << "," << msg.buy << "," << msg.sell << "," << msg.updated << "," <<
     msg.server_time << "\n";
