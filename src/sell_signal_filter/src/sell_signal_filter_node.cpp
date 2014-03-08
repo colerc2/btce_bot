@@ -51,8 +51,9 @@ void check_for_new_sell_signals(ros::NodeHandle &n){
   }
   //loop through and subscribe to all of the sell topics
   for(int i = 0; i < topics.size(); i++){
-    topics[i].erase(0, topics[i].find_first_not_of('\n'));
-    topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    //topics[i].erase(0, topics[i].find_first_not_of('\n'));
+    //topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    topics[i].erase(std::remove(topics[i].begin(), topics[i].end(), '\n'), topics[i].end());
     //all sell topics will begin with "/macd" and end with _sell
     if((topics[i].substr(0,5) == "/macd") &&
        (topics[i].substr(topics[i].size()-4, topics[i].size()) == "sell")){

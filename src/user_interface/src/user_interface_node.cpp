@@ -42,8 +42,10 @@ void plot_filter(){
   call_command(cmd, topics);
   for(int i = 0; i <topics.size(); i++){
     //erase this fucker
-    topics[i].erase(0, topics[i].find_first_not_of('\n'));
-    topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    //topics[i].erase(0, topics[i].find_first_not_of('\n'));
+    //topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    topics[i].erase(std::remove(topics[i].begin(), topics[i].end(), '\n'), topics[i].end());
+
   
     if((topics[i].substr(0,5) == "/macd") &&
        (topics[i].substr(topics[i].size()-4, topics[i].size()) == "macd")){
@@ -94,45 +96,74 @@ void plot_filter(){
   
 }
 
-void list_filters(){
-  std::string cmd = "rostopic list";
-  std::vector<std::string> topics;
-  std::vector<std::string> print_vec;
-
-  call_command(cmd, topics);
-  for(int i = 0; i <topics.size(); i++){
-    //erase this fucker
-    topics[i].erase(0, topics[i].find_first_not_of('\n'));
-    topics[i].erase(topics[i].find_last_not_of('\n')+1); 
-  
-    if((topics[i].substr(0,5) == "/macd") &&
-       (topics[i].substr(topics[i].size()-4, topics[i].size()) == "macd")){
-      std::stringstream ss(topics[i]);
-      std::string item;
-      std::string push_to_print;
-      std::getline(ss, item, '_');
-      std::getline(ss, item, '_');
-      push_to_print = item + "_";
-      std::getline(ss, item, '_');
-      push_to_print = push_to_print + item + "-->MACD(";
-      std::getline(ss, item, '_');
-      push_to_print = push_to_print + item + ",";
-      std::getline(ss, item, '_');
-      push_to_print = push_to_print + item + ",";
-      std::getline(ss, item, '_');
-      push_to_print = push_to_print + item + ") ";
-      std::getline(ss, item, '/');
-      push_to_print = push_to_print + item;
-      print_vec.push_back(push_to_print);
-    }
-  }
-  print_vector(print_vec);
-}
-
 void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   std::cout << "There are currently " << sells.size() << " sells on record.\n";
+  if(sells.size() == 0){
+    return;
+  }
+}
+
+//man, this is going to be hard/annoying
+make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std::string> &macd_nodes_info){
+  //get a list of the current node names
+  std::string node_list_cmd = "rosnode list";
+  std::vector<std::string> node_names;
+  call_command(node_list_cmd, node_names);
+  
+  //trim newline chars and save each topic name
+  for(int i = 0; i < node_names.size(); i++){
+    //node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
+    //node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
+    node_names[i].erase(std::remove(node_names[i].begin(),
+				    node_names[i].end(), '\n'),
+			node_names[i].end());
+    //is it a macd node?
+    if(node_names[i].find("/macd_sell_signal_node") != std::string::npos){
+      macd_nodes.push_back(node_names[i]);
+    }
+  }
+  //get info about each node for user
+  for(int i = 0; i < macd_nodes.size(); i++){
+    std::string node_info_cmd = "rosnode info " + macd_nodes[i];
+    std::vector<std::string> node_info;
+    call_command(node_info_cmd, node_info);
+    for(int j = 0; j < node_info.size(); j++){
+      //trim newline chars
+      node_info[j].erase(std::remove(node_info[j].begin(), node_info[j].end(), '\n'), node_info[j].end());
+
+      if(node_info[j].find("[macd_sell_signal/macd]") != std::string::npos){
+	std::stringstream ss(node_info[j].substr(3,node_info[j].size()-27));
+	std::string item;
+	std::string push_to_print;
+	std::getline(ss, item, '_');
+	std::getline(ss, item, '_');
+	push_to_print = "Pair:  " + item + "_";
+	std::getline(ss, item, '_');
+	push_to_print = push_to_print + item + "    MACD(";
+	std::getline(ss, item, '_');
+	push_to_print = push_to_print + item + ",";
+	std::getline(ss, item, '_');
+	push_to_print = push_to_print + item + ",";
+	std::getline(ss, item, '_');
+	push_to_print = push_to_print + item + ") ";
+	std::getline(ss, item, '/');
+	push_to_print = push_to_print + item;
+	macd_nodes_info.push_back(macd_nodes[i] + "\n\t" + (push_to_print));
+	break;
+      }
+    }
+  }
+}
   
 
+void kill_single_macd_node(){
+  std::vector<std::string> macd_nodes;
+  std::vector<std::string> macd_nodes_info;
+  std::vector<std::string> list = make_printable_vector(macd_nodes, macd_nodes_info);
+  //first, print list of vectors to screen for user
+  for(int i = 0; i < list.size() i++){
+  
+  }
 }
 
 void kill_all_macd_nodes(){
@@ -194,8 +225,9 @@ bool new_filter(){
   int node_counter = 1;
   //trim newline chars
   for(int i = 0; i < node_names.size(); i++){
-    node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
-    node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
+    //node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
+    //node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
+    node_names[i].erase(std::remove(node_names[i].begin(), node_names[i].end(), '\n'), node_names[i].end());
   }
   
   //find next available node name
@@ -268,8 +300,12 @@ int main(int argc, char** argv){
     std::cin >> input;
     if(input == "h"){print_help_screen();}
     else if(input == "q"){break;}
-    else if(input == "l"){list_filters();}
-    else if(input == "p"){plot_filter();}
+    else if(input == "l"){
+      std::vector<std::string> macd_nodes;
+      std::vector<std::string> macd_nodes_info;
+      make_printable_vector(macd_nodes, macd_nodes_info);
+      print_vector(macd_nodes_info);
+    }else if(input == "p"){plot_filter();}
     else if(input == "n"){
       if(new_filter()){
 	break;
