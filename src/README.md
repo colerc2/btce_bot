@@ -1,4 +1,6 @@
 A brief description of each of the packages, for more information, please check the README.md in the package.
+#### [btce_health](btce_health)
+TODO
 
 #### [macd_sell_signal](macd_sell_signal)
 This package subscribes to a ticker topic and publishes a sell signal which is a boolean along with macd values at the current time(TODO). It utilizes a C++ object called [macd_indicator](macd_sell_signal/src/macd_indicator.cpp). This object is used to handle the MACD calculations. This package also provides a service that allows a node to ask for previous macd values. This is mostly used so the plotting node can ask for historical data and plot at it's leisure instead of publishing all of this data to a topic. It also is a client for a service that recalls historical data from a file. The idea is that the ticker/save nodes should always be running, and any MACD node should be able to be started at any point and have valid numbers for the filters, there won't be any settling time.
@@ -44,3 +46,6 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
 
 #### [user_interface](user_interface)
 This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders.
+
+#### [wallet](wallet)
+TODO
