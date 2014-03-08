@@ -156,9 +156,16 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
 
     //find difference between time of sell and now
     double diff_in_seconds = difftime(server_time_time_t, sell_time_time_t);
-
+    
+    int hours_ago = ((int)diff_in_seconds)/((int)3600);
+    int minutes_ago = (((int)diff_in_seconds)%((int)3600))/60;
+    int seconds_ago = ((int)diff_in_seconds)%60;
+    
+    //construct string representation of time elapsed
+    std::string delta_time = std::to_string(hours_ago) + ":" + std::to_string(minutes_ago) + ":" + std::to_string(seconds_ago);
+    
     //output some info on sell
-    std::cout << tmp.current.tick.server_time << " (" << (diff_in_seconds) << " seconds ago)" << std::endl;
+    std::cout << tmp.current.tick.server_time << " (" << delta_time << " ago)" << std::endl;
   }
 }
 
