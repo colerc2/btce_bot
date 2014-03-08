@@ -43,4 +43,4 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
 - Services(Server/Client) - None
 
 #### [user_interface](user_interface)
-This package provides a convienient command line utility to start new MACD topics and show plots.
+This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders.
