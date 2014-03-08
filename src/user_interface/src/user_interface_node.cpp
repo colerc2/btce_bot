@@ -101,6 +101,13 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   if(sells.size() == 0){
     return;
   }
+  //First loop through the sells and gather statistics about them
+  int number_completed = 0;
+  //std::vector<std::string> 
+  for(int i = 0; i < sells.size(); i++){
+    macd_sell_signal::sell tmp = sells[i];//so i don't keep having to type []
+    std::cout << "Sell number " << i;
+  }
 }
 
 //man, this is going to be hard/annoying
@@ -112,8 +119,6 @@ void make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std:
   
   //trim newline chars and save each topic name
   for(int i = 0; i < node_names.size(); i++){
-    //node_names[i].erase(0, node_names[i].find_first_not_of('\n'));
-    //node_names[i].erase(node_names[i].find_last_not_of('\n')+1); 
     node_names[i].erase(std::remove(node_names[i].begin(),
 				    node_names[i].end(), '\n'),
 			node_names[i].end());
@@ -287,11 +292,14 @@ bool new_filter(){
 
 void print_help_screen(){
   std::cout << "Available commands:" << std::endl;
-  std::cout << "\th - help - display this screen" << std::endl;
-  std::cout << "\tq - quit - exit user interface" << std::endl;
-  std::cout << "\tl - list current filters and associated params" << std::endl;
-  std::cout << "\tp - plot one of the macd filters" << std::endl;
-  std::cout << "\tn - new MACD filter" << std::endl;
+  std::cout << "\th(elp) - help - display this screen" << std::endl;
+  std::cout << "\tq(uit) - quit - exit user interface" << std::endl;
+  std::cout << "\tl(ist) - list current filters and associated params" << std::endl;
+  std::cout << "\tp(lot) - plot one of the macd filters" << std::endl;
+  std::cout << "\tn(ew) - new MACD filter" << std::endl;
+  std::cout << "\tkillall - kill all MACD nodes" << std::endl;
+  std::cout << "\tk(ill) - kill individual nodes" << std::endl;
+  std::cout << "\ts(ells) - list of current sells" << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -312,19 +320,19 @@ int main(int argc, char** argv){
   while(1){//good programming pracetice, i know
     std::cout << "Please enter a command (h for help): ";
     std::cin >> input;
-    if(input == "h"){print_help_screen();}
-    else if(input == "q"){break;}
-    else if(input == "l"){
+    if(input == "h" || input == "help"){print_help_screen();}
+    else if(input == "q" || input == "quit"){break;}
+    else if(input == "l" || input == "list"){
       std::vector<std::string> macd_nodes;
       std::vector<std::string> macd_nodes_info;
       make_printable_vector(macd_nodes, macd_nodes_info);
       print_vector(macd_nodes_info);
-    }else if(input == "p"){plot_filter();}
-    else if(input == "n"){
+    }else if(input == "p" || input == "plot"){plot_filter();}
+    else if(input == "n" || input == "new"){
       if(new_filter()){
 	break;
       }
-    }else if(input == "s"){
+    }else if(input == "s" || input == "sells"){
       if(sell_history_client.call(srv)){
 	sell_history_routine(srv.response.history);
       }else{
@@ -333,7 +341,7 @@ int main(int argc, char** argv){
       }
     }else if(input == "killall"){
       kill_all_macd_nodes();
-    }else if(input == "kill"){
+    }else if(input == "k" || input == "kill"){
       kill_individual_nodes();
     }
   }

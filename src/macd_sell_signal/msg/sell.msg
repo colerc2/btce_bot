@@ -4,6 +4,6 @@ int64 long_ema
 int64 sig_ema
 int64 period
 int64 spread_window
-int64 spread_thresh
+float64 spread_thresh
 macd_sell_signal/macd current
 macd_sell_signal/macd previous
