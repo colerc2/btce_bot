@@ -13,7 +13,8 @@
 #include <ticker_publisher/ticker.h>
 #include <sell_signal_filter/history.h>
 #include <btce_health/server_time.h>
-#include <ctime>
+#include <time.h>
+#include <stdio.h>
 
 
 ros::ServiceClient server_time_client_;
@@ -118,10 +119,12 @@ std::tm create_tm_struct(std::string server_time){
   tm_ret.tm_min = atoi(item.c_str());
   std::getline(ss, item, '\n');
   tm_ret.tm_sec = atoi(item.c_str());
+  tm_ret.tm_isdst = -1; // without this, all fails
+  
+  return tm_ret;
 }
 
 void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
-  std::cout << "There are currently " << sells.size() << " sells on record.\n";
   if(sells.size() == 0){
     return;
   }
@@ -137,13 +140,25 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   
   //construct std::tm struct from server_time string
   std::tm server_time_tm = create_tm_struct(server_time);
+  time_t server_time_time_t = mktime(&server_time_tm);
+  std::cout << "There are currently " << sells.size() << " sells on record at time " << server_time << ":" << std::endl;;
 
   //First loop through the sells and gather statistics about them
   int number_completed = 0;
   //std::vector<std::string> 
   for(int i = 0; i < sells.size(); i++){
     macd_sell_signal::sell tmp = sells[i];//so i don't keep having to type []
-    std::cout << "Sell number " << i;
+    std::cout << "Sell number " << i << "    :    ";
+
+    //find time of sell
+    std::tm sell_time_tm = create_tm_struct(tmp.current.tick.server_time);
+    time_t sell_time_time_t = mktime(&sell_time_tm);
+
+    //find difference between time of sell and now
+    double diff_in_seconds = difftime(server_time_time_t, sell_time_time_t);
+
+    //output some info on sell
+    std::cout << tmp.current.tick.server_time << " (" << (diff_in_seconds) << " seconds ago)" << std::endl;
   }
 }
 
