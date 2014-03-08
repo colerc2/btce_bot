@@ -14,6 +14,7 @@
   <build_depend>ticker_publisher</build_depend>
   <build_depend>macd_sell_signal</build_depend>
   <build_depend>sell_signal_filter</build_depend>
+  <build_depend>btce_health</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
@@ -23,6 +24,7 @@
   <run_depend>ticker_publisher</run_depend>
   <run_depend>macd_sell_signal</run_depend>
   <run_depend>sell_signal_filter</run_depend>
+  <run_depend>btce_health</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>

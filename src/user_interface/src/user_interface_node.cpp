@@ -12,7 +12,10 @@
 #include <macd_sell_signal/macd.h>
 #include <ticker_publisher/ticker.h>
 #include <sell_signal_filter/history.h>
+#include <btce_health_node/server_time.h>
 
+
+ros::ServiceClient server_time_client_;
 
 void print_vector(std::vector<std::string> &print_me){
   std::copy(print_me.begin(),
@@ -23,12 +26,13 @@ void print_vector(std::vector<std::string> &print_me){
 void call_command(std::string &cmd, std::vector<std::string> &lines){
   FILE * cmd_output = popen(cmd.c_str(), "r");
   
-  //put this crap in a vector
+  //store each line as new element of vector
   char line[256];
   while( fgets (line, sizeof line, cmd_output)){
     lines.push_back(line);
   }
-  pclose(cmd_output);//shit gets pretty walking dead up in here without this line
+  //comment out to trigger walking dead
+  pclose(cmd_output);
 }
 
 
@@ -41,9 +45,7 @@ void plot_filter(){
 
   call_command(cmd, topics);
   for(int i = 0; i <topics.size(); i++){
-    //erase this fucker
-    //topics[i].erase(0, topics[i].find_first_not_of('\n'));
-    //topics[i].erase(topics[i].find_last_not_of('\n')+1); 
+    //erase newline chars
     topics[i].erase(std::remove(topics[i].begin(), topics[i].end(), '\n'), topics[i].end());
 
   
@@ -101,6 +103,16 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   if(sells.size() == 0){
     return;
   }
+  std::string server_time;
+  //get server time
+  btce_health::server_time srv;
+  if(server_time_client_.call(srv)){
+    server_time = srv.server_time;
+  }else{
+    ROS_ERROR("Failed to call service /sell_history");
+    return 1;
+  }
+
   //First loop through the sells and gather statistics about them
   int number_completed = 0;
   //std::vector<std::string> 
@@ -311,6 +323,7 @@ int main(int argc, char** argv){
   std::string sell_history_service_name = "sell_history";
   ros::ServiceClient sell_history_client = n.serviceClient<sell_signal_filter::history>(sell_history_service_name);
   sell_signal_filter::history srv;
+  server_time_client_ = n.serviceClient<btce_health::server_time>("server_time");
 
   ros::Rate rate(100);
   //use a seperate thread for callbacks, might do something with current thread later

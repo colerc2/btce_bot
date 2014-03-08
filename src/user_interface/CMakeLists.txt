@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   ticker_publisher
   macd_sell_signal
   sell_signal_filter
+  btce_health
   message_generation
 )
 
@@ -88,7 +89,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES user_interface
- CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher macd_sell_signal message_runtime
+ CATKIN_DEPENDS roscpp rospy std_msgs ticker_publisher macd_sell_signal btce_health message_runtime
 #  DEPENDS system_lib
 )
 
