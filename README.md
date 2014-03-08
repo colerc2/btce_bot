@@ -31,3 +31,4 @@ rosrun plot_macd plot_macd_node.py _macd_array_service:="macd_11_25_8_x10/macd_a
 
 ####Known Issues
 - (Might have fixed it, haven't seen it since March 6th) When ticker_publisher nodes are running and save_load ticker node is running too, after they've been running for a very long time(>1 hour) if a new macd_sell_signal node is started, the service that requests the history will fail, causing the save_load_ticker node to crash although the new MACD node starts up without any issues, it just has no history, so the filter has to settle down 
+- (Only saw this happen once, March 8th) When the user_interface_node initializes, it makes a call to the /sell_history service so it can load all the sells and display them to the user. That call to that service failed, still trying to figure this one out.
