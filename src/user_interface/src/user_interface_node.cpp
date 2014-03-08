@@ -12,7 +12,7 @@
 #include <macd_sell_signal/macd.h>
 #include <ticker_publisher/ticker.h>
 #include <sell_signal_filter/history.h>
-#include <btce_health_node/server_time.h>
+#include <btce_health/server_time.h>
 
 
 ros::ServiceClient server_time_client_;
@@ -107,10 +107,10 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   //get server time
   btce_health::server_time srv;
   if(server_time_client_.call(srv)){
-    server_time = srv.server_time;
+    server_time = srv.response.server_time;
   }else{
-    ROS_ERROR("Failed to call service /sell_history");
-    return 1;
+    ROS_ERROR("Failed to call service /server_time");
+    return;
   }
 
   //First loop through the sells and gather statistics about them
