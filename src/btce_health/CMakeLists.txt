@@ -54,11 +54,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  server_time.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -68,10 +67,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  ticker_publisher
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -106,16 +106,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(btce_health_node src/btce_health_node.cpp)
+add_executable(btce_health_node src/btce_health_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(btce_health_node btce_health_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-#target_link_libraries(btce_health_node
-#  ${catkin_LIBRARIES}
-#)
+target_link_libraries(btce_health_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
