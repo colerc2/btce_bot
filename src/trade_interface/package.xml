@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>trade_interface</name>
+  <version>0.0.0</version>
+  <description>This package handles all communication between the C++ code/filters and the BTC-e trade API</description>
+
+  <maintainer email="cole.robert.c@gmail.com">Bob Cole</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+
+</package>
