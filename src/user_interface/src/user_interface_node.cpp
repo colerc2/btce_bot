@@ -13,6 +13,7 @@
 #include <ticker_publisher/ticker.h>
 #include <sell_signal_filter/history.h>
 #include <btce_health/server_time.h>
+#include <ctime>
 
 
 ros::ServiceClient server_time_client_;
@@ -98,6 +99,27 @@ void plot_filter(){
   
 }
 
+
+//convert string in the form "yyyy-mm-dd hh:mm:ss" to a std::tm struct
+std::tm create_tm_struct(std::string server_time){
+  std::stringstream ss(server_time);
+  std::string item;
+  std::tm tm_ret;
+
+  std::getline(ss, item, '-');
+  tm_ret.tm_year = atoi(item.c_str())- 1900;//year since 1900
+  std::getline(ss, item, '-');
+  tm_ret.tm_mon = atoi(item.c_str()) - 1;//since months in struct are 0-11 not 1-12
+  std::getline(ss, item, ' ');
+  tm_ret.tm_mday = atoi(item.c_str());
+  std::getline(ss, item, ':');
+  tm_ret.tm_hour = atoi(item.c_str());
+  std::getline(ss, item, ':');
+  tm_ret.tm_min = atoi(item.c_str());
+  std::getline(ss, item, '\n');
+  tm_ret.tm_sec = atoi(item.c_str());
+}
+
 void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   std::cout << "There are currently " << sells.size() << " sells on record.\n";
   if(sells.size() == 0){
@@ -112,6 +134,9 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
     ROS_ERROR("Failed to call service /server_time");
     return;
   }
+  
+  //construct std::tm struct from server_time string
+  std::tm server_time_tm = create_tm_struct(server_time);
 
   //First loop through the sells and gather statistics about them
   int number_completed = 0;
