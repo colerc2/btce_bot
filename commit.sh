@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull
 git add -A
 git config --global user.name "Bob Cole"
 git config --global user.email colerc2@miamioh.edu
