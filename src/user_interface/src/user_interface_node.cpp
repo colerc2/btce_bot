@@ -148,7 +148,7 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
   //std::vector<std::string> 
   for(int i = 0; i < sells.size(); i++){
     macd_sell_signal::sell tmp = sells[i];//so i don't keep having to type []
-    std::cout << "Sell number " << i << "    :    ";
+    std::cout << "Sell number " << i << "  -  ";
 
     //find time of sell
     std::tm sell_time_tm = create_tm_struct(tmp.current.tick.server_time);
@@ -166,7 +166,12 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
     
     //output some info on sell
     std::cout << tmp.current.tick.server_time << " (" << delta_time << " ago)" << std::endl;
-  }
+    
+    std::cout << "    - Trade pair: " << tmp.current.tick.trade_pair << std::endl;
+    std::cout << "    - MACD(" << tmp.short_ema << "," << tmp.long_ema << "," << tmp.sig_ema << ")x" << tmp.period << std::endl;
+    std::cout << "    - Spread sliding window length: " << tmp.spread_window << " seconds" << std::endl;
+    std::cout << "    - Spread threshold: " << tmp.spread_thresh << std::endl;
+ }
 }
 
 //man, this is going to be hard/annoying
