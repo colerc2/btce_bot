@@ -104,7 +104,7 @@ void sell_history_routine(std::vector<macd_sell_signal::sell> &sells){
 }
 
 //man, this is going to be hard/annoying
-make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std::string> &macd_nodes_info){
+void make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std::string> &macd_nodes_info){
   //get a list of the current node names
   std::string node_list_cmd = "rosnode list";
   std::vector<std::string> node_names;
@@ -139,16 +139,16 @@ make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std::stri
 	std::getline(ss, item, '_');
 	push_to_print = "Pair:  " + item + "_";
 	std::getline(ss, item, '_');
-	push_to_print = push_to_print + item + "    MACD(";
+	push_to_print = push_to_print + item + "    \n    MACD(";
 	std::getline(ss, item, '_');
 	push_to_print = push_to_print + item + ",";
 	std::getline(ss, item, '_');
 	push_to_print = push_to_print + item + ",";
 	std::getline(ss, item, '_');
-	push_to_print = push_to_print + item + ") ";
+	push_to_print = push_to_print + item + ")";
 	std::getline(ss, item, '/');
 	push_to_print = push_to_print + item;
-	macd_nodes_info.push_back(macd_nodes[i] + "\n\t" + (push_to_print));
+	macd_nodes_info.push_back(macd_nodes[i] + "\n    " + (push_to_print));
 	break;
       }
     }
@@ -156,13 +156,27 @@ make_printable_vector(std::vector<std::string> &macd_nodes,std::vector<std::stri
 }
   
 
-void kill_single_macd_node(){
+void kill_individual_nodes(){
   std::vector<std::string> macd_nodes;
   std::vector<std::string> macd_nodes_info;
-  std::vector<std::string> list = make_printable_vector(macd_nodes, macd_nodes_info);
+  make_printable_vector(macd_nodes, macd_nodes_info);
   //first, print list of vectors to screen for user
-  for(int i = 0; i < list.size() i++){
-  
+  for(int i = 0; i < macd_nodes_info.size(); i++){
+    std::cout << "Node " << i << ": " << macd_nodes_info[i] << std::endl;
+  }
+  std::cout << "Enter which nodes you'd like to kill, separated by spaces, enter -1 when finished\n";
+  std::cout << "example: 3 6 13 -1" << std::endl;
+  std::cout << "\t>";
+  int kill_this_node = -2;
+  std::vector<int> kill_nodes;
+  while(kill_this_node != -1){
+    std::cin >> kill_this_node;
+    kill_nodes.push_back(kill_this_node);
+  }
+  std::vector<std::string> throwaway_vector;
+  for(int i = 0; i < kill_nodes.size()-1; i++){
+    std::string kill_cmd = "rosnode kill " + macd_nodes[kill_nodes[i]];
+    call_command(kill_cmd, throwaway_vector);
   }
 }
 
@@ -319,6 +333,8 @@ int main(int argc, char** argv){
       }
     }else if(input == "killall"){
       kill_all_macd_nodes();
+    }else if(input == "kill"){
+      kill_individual_nodes();
     }
   }
   spinner.stop();
