@@ -22,14 +22,42 @@ class InterfaceNode():
         self.msg = get_info()
 
         while not rospy.is_shutdown():
-            rospy.sleep(5.0)
             self.call_get_info()
             #TODO:make next call a service
             #self.call_trans_history()
             #TODO:do i even need to use the next call?
             #self.call_trade_history()
-    def call_trade_history(self):
-        pair = "btc_usd"
+            self.call_order_list()
+            rospy.sleep(5.0)
+
+
+    def call_order_list(self):
+        for key in self.handler.getKeys():
+            t = btceapi.TradeAPI(key, self.handler)
+            try:
+                orders = t.activeOrders(connection = self.conn)
+                if orders:
+                    for o in orders:
+                        print "\t\t order id: %r" % o.order_id
+                        print "\t\t type: %s" % o.type
+                        print "\t\t pair: %s" % o.pair
+                        print "\t\t rate: %s" % o.rate
+                        print "\t\t amount: %s" % o.amount
+                        print "\t\t created: %r" % o.timestamp_created
+                        print "\t\t status: %r" % o.status
+                        print
+                else:
+                    print "\t\tno orders"
+            except Exception as e:
+                print "  An error occurred: %s" % e
+                rospy.sleep(5.0)
+                
+                self.conn = btceapi.BTCEConnection()
+                pass
+            
+    
+
+    def call_trade_history(self, pair):
         history = btceapi.getTradeHistory(pair)
         
         print len(history)
