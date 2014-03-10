@@ -7,6 +7,7 @@ import csv
 import time
 import sys
 from trade_interface.msg import get_info
+from trade_interface.srv import get_info_all
 from collections import deque
 import pylab
 
@@ -20,15 +21,19 @@ class InterfaceNode():
         self.topic_names_init = False
         self.topics = deque([])
         self.msg = get_info()
-
-        while not rospy.is_shutdown():
-            self.call_get_info()
+        
+        #intiate a bunch of services
+        get_info_service = rospy.Service('get_info_service', get_info_all, self.call_get_info)
+        rospy.spin()
+        
+        #while not rospy.is_shutdown():
+         #   self.call_get_info()
             #TODO:make next call a service
             #self.call_trans_history()
             #TODO:do i even need to use the next call?
             #self.call_trade_history()
-            self.call_order_list()
-            rospy.sleep(5.0)
+         #   self.call_order_list()
+         #   rospy.sleep(5.0)
 
 
     def call_order_list(self):
@@ -94,7 +99,9 @@ class InterfaceNode():
                 self.conn = btceapi.BTCEConnection()
                 pass
                 
-    def call_get_info(self):
+    def call_get_info(req):
+        res = get_info_all()
+        
         for key in self.handler.getKeys():
             #print "Printing info for key %s" % key
                 
@@ -115,7 +122,8 @@ class InterfaceNode():
                     self.msg.balance = balance
                     #test_string = "%r" % r.server_time
                     self.msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
-                    self.topics[counter].publish(self.msg)
+                    res.append(self.msg)
+                    #self.topics[counter].publish(self.msg)
                     counter = counter + 1
                         
                 self.topic_names_init = True
@@ -126,6 +134,7 @@ class InterfaceNode():
 
                 self.conn = btceapi.BTCEConnection()
                 pass
+        return res
 
                   
 if __name__ == '__main__':
