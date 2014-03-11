@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   ticker_publisher
+  trade_interface
   message_generation
 )
 
@@ -85,7 +86,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES wallet
- CATKIN_DEPENDS macd_sell_signal roscpp rospy std_msgs ticker_publisher message_runtime
+ CATKIN_DEPENDS macd_sell_signal roscpp rospy std_msgs ticker_publisher trade_interface message_runtime
 #  DEPENDS system_lib
 )
 
@@ -106,16 +107,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(wallet_node src/wallet_node.cpp)
+add_executable(wallet_node src/wallet_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(wallet_node wallet_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(wallet_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(wallet_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

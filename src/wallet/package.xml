@@ -10,6 +10,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>trade_interface</build_depend>
   <build_depend>ticker_publisher</build_depend>
   <build_depend>macd_sell_signal</build_depend>
   <build_depend>message_generation</build_depend>
@@ -17,6 +18,7 @@
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
 
+  <run_depend>trade_interface</run_depend>
   <run_depend>macd_sell_signal</run_depend>
   <run_depend>ticker_publisher</run_depend>
   <run_depend>message_runtime</run_depend>
