@@ -44,6 +44,9 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
 - Subscribers - None
 - Services(Server/Client) - None
 
+#### [trade_interface](trade_interface)
+This package uses the BTC-e API to execute trades/cancel orders/check orderbook/etc. All of these methods are provided via a service to the rest of the code. (This is mostly done because the majority of the code is written in C++, and this provides a concvienient way for the C++ code to access the BTC-e API.)
+
 #### [user_interface](user_interface)
 This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders.
 
