@@ -1,6 +1,6 @@
 A brief description of each of the packages, for more information, please check the README.md in the package.
 #### [btce_health](btce_health)
-TODO
+This package will monitor the btc-e website and check things like server timestamps to see if the exchange looks like it's running ok. If for any reason it determines that the exchange is having problems it will provide a service for the rest of the code to see the status of the exchange. Before any trades/order cancellations are executed, this service will be the last check before the trade/cancel happens.
 
 #### [macd_sell_signal](macd_sell_signal)
 This package subscribes to a ticker topic and publishes a sell signal which is a boolean along with macd values at the current time(TODO). It utilizes a C++ object called [macd_indicator](macd_sell_signal/src/macd_indicator.cpp). This object is used to handle the MACD calculations. This package also provides a service that allows a node to ask for previous macd values. This is mostly used so the plotting node can ask for historical data and plot at it's leisure instead of publishing all of this data to a topic. It also is a client for a service that recalls historical data from a file. The idea is that the ticker/save nodes should always be running, and any MACD node should be able to be started at any point and have valid numbers for the filters, there won't be any settling time.
