@@ -48,7 +48,7 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
 This package uses the BTC-e API to execute trades/cancel orders/check orderbook/etc. All of these methods are provided via a service to the rest of the code. (This is mostly done because the majority of the code is written in C++, and this provides a concvienient way for the C++ code to access the BTC-e API.)
 
 #### [user_interface](user_interface)
-This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders.
+This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders. It will eventually provide information on the user wallet and buy orders. It may also provide a way to execute buy/sell orders from the command line.
 
 #### [wallet](wallet)
-TODO
+The wallet package will listen for sell signals coming from the sell_signal_filter node and execute these sells if it determines that all is a go. It will do a few sanity checks before executing a sell, one will be a call to the service that the btce_health package provides, another will be a check to make sure that the number of orders & coin balances in our local copy match what BTC-e has on record.
