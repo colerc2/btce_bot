@@ -99,9 +99,15 @@ class InterfaceNode():
                 self.conn = btceapi.BTCEConnection()
                 pass
                 
-    def call_get_info(req):
+    def call_get_info(self, req):
         res = get_info_all()
         
+#        print get_info_all.info
+        print "-----------------------\n"
+        for property, value in vars(res).iteritems():
+            print property, ": ", value
+        print "-----------------------\n"
+
         for key in self.handler.getKeys():
             #print "Printing info for key %s" % key
                 
@@ -122,7 +128,7 @@ class InterfaceNode():
                     self.msg.balance = balance
                     #test_string = "%r" % r.server_time
                     self.msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
-                    res.append(self.msg)
+                    res.info.append(self.msg)
                     #self.topics[counter].publish(self.msg)
                     counter = counter + 1
                         
