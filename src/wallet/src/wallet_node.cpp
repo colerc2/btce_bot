@@ -61,7 +61,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     //every few seconds, check to make sure our wallet is synced with BTC-e wallet
     if(get_info_client.call(srv)){
-      //handle_get_info_res(srv.response.info);
+      handle_get_info_res(srv.response.info);
     }else{
       ROS_ERROR("Failed to call service /get_info_service");
       return 1;

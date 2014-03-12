@@ -7,7 +7,7 @@ import csv
 import time
 import sys
 from trade_interface.msg import get_info
-from trade_interface.srv import get_info_all
+from trade_interface.srv import *
 from collections import deque
 import pylab
 
@@ -20,7 +20,7 @@ class InterfaceNode():
         self.conn = btceapi.BTCEConnection()
         self.topic_names_init = False
         self.topics = deque([])
-        self.msg = get_info()
+ #       self.msg = get_info()
         
         #intiate a bunch of services
         get_info_service = rospy.Service('get_info_service', get_info_all, self.call_get_info)
@@ -100,12 +100,14 @@ class InterfaceNode():
                 pass
                 
     def call_get_info(self, req):
-        res = get_info_all()
-        
+        res = get_info_allResponse()
+
+
 #        print get_info_all.info
         print "-----------------------\n"
-        for property, value in vars(res).iteritems():
-            print property, ": ", value
+        #for property, value in vars(res).iteritems():
+        #    print property, ": ", value
+        #[name for name,thing in res.getmembers([])]
         print "-----------------------\n"
 
         for key in self.handler.getKeys():
@@ -119,17 +121,19 @@ class InterfaceNode():
                 
                 counter = 0
                 for currency in btceapi.all_currencies:
+                    msg = get_info()
                     if (self.topic_names_init == False):
                         topic_name = 'trade_interface/get_info/' + currency
                         self.topics.append(rospy.Publisher(topic_name, get_info))
                         
                     balance = getattr(r, "balance_" + currency)
-                    self.msg.coin = currency
-                    self.msg.balance = balance
+                    msg.coin = currency
+                    msg.balance = balance
                     #test_string = "%r" % r.server_time
-                    self.msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
-                    res.info.append(self.msg)
-                    #self.topics[counter].publish(self.msg)
+                    msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
+                    res.info.append(msg)
+                    #res.append(self.msg)
+#self.topics[counter].publish(self.msg)
                     counter = counter + 1
                         
                 self.topic_names_init = True
@@ -140,6 +144,9 @@ class InterfaceNode():
 
                 self.conn = btceapi.BTCEConnection()
                 pass
+               #get_info_
+            #tester = get_info_allResponse()
+            #tester.info = response
         return res
 
                   
