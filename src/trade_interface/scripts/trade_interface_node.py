@@ -25,7 +25,7 @@ class InterfaceNode():
         
         #intiate a bunch of services
         get_info_service = rospy.Service('get_info_service', get_info_all, self.call_get_info)
-        trans_history_service = rospy.Service('trans_history_service', trans_history, self.call_trans_history)
+        trans_history_service = rospy.Service('trans_history_service', trans_history_all, self.call_trans_history)
         rospy.spin()
         
         #while not rospy.is_shutdown():
@@ -89,21 +89,24 @@ class InterfaceNode():
                 th = t.transHistory()
                 for h in th:
                     msg = trans_history()
-                    msg.transaction_id = h.transaction_id
-                    msg.type = h.type
-                    msg.amount = h.amount
-                    msg.currency = h.currency
-                    msg.desc = h.desc
-                    msg.status = h.status
-                    msg.timestamp = h.timestamp
+                    msg.transaction_id = int(h.transaction_id)
+                    msg.type = int(h.type)
+                    msg.amount = float(h.amount)
+                    msg.currency = h.currency.encode('ascii')
+                    msg.desc = h.desc.encode('ascii', 'ignore')
+                    msg.status = int(h.status)
+                    msg.timestamp = h.timestamp.strftime("%Y-%m-%d %H:%M:%S")
                     res.trans_hist_array.append(msg)
 
-            except:
+            except Exception as e:
                 print "  An error occurred: %s" % e
+                print h.currency
+                print h.desc
                 rospy.sleep(5.0)
                 
-                self.conn = btceapi.BTCEConnection()
+                #self.conn = btceapi.BTCEConnection()
                 pass
+        return res
                 
     def call_get_info(self, req):
         res = get_info_allResponse()

@@ -8,6 +8,8 @@
 #include <macd_sell_signal/sell.h>
 #include <trade_interface/get_info.h>
 #include <trade_interface/get_info_all.h>
+#include <trade_interface/trans_history.h>
+#include <trade_interface/trans_history_all.h>
 
 #define LOCAL 0
 #define REMOTE 1
@@ -36,19 +38,30 @@ void handle_get_info_res(trade_interface::get_info_all::Response &res){
   }
 }
 
+void handle_trans_history_res(trade_interface::trans_history_all::Response &res){
+  for(unsigned int i = 0; i < res.trans_hist_array.size(); i++){
+    std::cout << "Transaction id   : " << res.trans_hist_array[i].transaction_id << std::endl;
+    std::cout << "Type             : " << res.trans_hist_array[i].type << std::endl;
+    std::cout << "Amount           : " << res.trans_hist_array[i].amount << std::endl;
+    std::cout << "Currency         : " << res.trans_hist_array[i].currency << std::endl;
+    std::cout << "Description      : " << res.trans_hist_array[i].desc << std::endl;
+    std::cout << "Status           : " << res.trans_hist_array[i].status << std::endl;
+    std::cout << "Timestamp        : " << res.trans_hist_array[i].timestamp << std::endl;
+  }
+}
+
 int main(int argc, char** argv){
   //Node setup
   ros::init(argc, argv, "wallet_node");
   ros::NodeHandle n;//global
   ros::NodeHandle nh("~");//local
-  
-  //std::string some_param;
-  //int some_other_param;
 
-  //Services
-  //ros::ServiceServer service = n.advertiseService("service_name", service_request);
+  //get_info service
   ros::ServiceClient get_info_client = n.serviceClient<trade_interface::get_info_all>("get_info_service");
-  trade_interface::get_info_all srv;
+  trade_interface::get_info_all get_info_srv;
+  //trans_history service
+  ros::ServiceClient trans_history_client = n.serviceClient<trade_interface::trans_history_all>("trans_history_service");
+  trade_interface::trans_history_all trans_history_srv;
 
   //TODO: routine that syncs this wallet with BTC-e wallet
   
@@ -65,12 +78,20 @@ int main(int argc, char** argv){
   spinner.start();
   while(ros::ok()){
     //every few seconds, check to make sure our wallet is synced with BTC-e wallet
-    if(get_info_client.call(srv)){
-      handle_get_info_res(srv.response);
+    if(get_info_client.call(get_info_srv)){
+      handle_get_info_res(get_info_srv.response);
     }else{
       ROS_ERROR("Failed to call service /get_info_service");
       return 1;
     }
+    //call trans_history_all service
+    if(trans_history_client.call(trans_history_srv)){
+      handle_trans_history_res(trans_history_srv.response);
+    }else{
+      ROS_ERROR("Failed to call service /trans_history_service");
+      return 1;
+    }
+
     rate.sleep();
   }
   spinner.stop();
