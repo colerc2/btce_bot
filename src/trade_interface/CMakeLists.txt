@@ -48,12 +48,14 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   get_info.msg
+  trans_history.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
   get_info_all.srv
+  trans_history_all.srv
 )
 
 ## Generate actions in the 'action' folder

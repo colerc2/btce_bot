@@ -7,6 +7,7 @@ import csv
 import time
 import sys
 from trade_interface.msg import get_info
+from trade_interface.msg import trans_history
 from trade_interface.srv import *
 from collections import deque
 import pylab
@@ -24,6 +25,7 @@ class InterfaceNode():
         
         #intiate a bunch of services
         get_info_service = rospy.Service('get_info_service', get_info_all, self.call_get_info)
+        trans_history_service = rospy.Service('trans_history_service', trans_history, self.call_trans_history)
         rospy.spin()
         
         #while not rospy.is_shutdown():
@@ -77,21 +79,25 @@ class InterfaceNode():
         pylab.show()
 
             
-    def call_trans_history(self):
+    def call_trans_history(self, req):
+        res = trans_history_allResponse()
+        
         for key in self.handler.getKeys():
             t = btceapi.TradeAPI(key, handler=self.handler)
             
             try:
                 th = t.transHistory()
                 for h in th:
-                    print "\t\t        id: %r" % h.transaction_id
-                    print "\t\t      type: %r" % h.type
-                    print "\t\t    amount: %r" % h.amount
-                    print "\t\t  currency: %r" % h.currency
-                    print "\t\t      desc: %s" % h.desc
-                    print "\t\t    status: %r" % h.status
-                    print "\t\t timestamp: %r" % h.timestamp
-                    print
+                    msg = trans_history()
+                    msg.transaction_id = h.transaction_id
+                    msg.type = h.type
+                    msg.amount = h.amount
+                    msg.currency = h.currency
+                    msg.desc = h.desc
+                    msg.status = h.status
+                    msg.timestamp = h.timestamp
+                    res.trans_hist_array.append(msg)
+
             except:
                 print "  An error occurred: %s" % e
                 rospy.sleep(5.0)

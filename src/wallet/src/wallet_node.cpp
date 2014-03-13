@@ -32,7 +32,6 @@ void handle_get_info_res(trade_interface::get_info_all::Response &res){
   for(unsigned int i = 0; i < res.info.size(); i++){
     std::cout << "Coin   : " << res.info[i].coin << std::endl;
     std::cout << "Balance: " << res.info[i].balance << std::endl;
-    //   std::cout << "Time   : " << info[i].server_time << std::endl;
     std::cout << "------------------------" << std::endl;
   }
 }
