@@ -1,4 +1,5 @@
-string test1
 ---
-string test2
 trade_interface/get_info[] info
+int32 transaction_count
+int32 open_orders
+string server_time

@@ -102,23 +102,15 @@ class InterfaceNode():
     def call_get_info(self, req):
         res = get_info_allResponse()
 
-
-#        print get_info_all.info
-        print "-----------------------\n"
-        #for property, value in vars(res).iteritems():
-        #    print property, ": ", value
-        #[name for name,thing in res.getmembers([])]
-        print "-----------------------\n"
-
         for key in self.handler.getKeys():
-            #print "Printing info for key %s" % key
-                
             # NOTE: In future versions, the handler argument will be required.
             t = btceapi.TradeAPI(key, handler=self.handler)
                 
             try:
                 r = t.getInfo(connection = self.conn)
-                
+                res.transaction_count = r.transaction_count
+                res.open_orders = r.open_orders
+                res.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
                 counter = 0
                 for currency in btceapi.all_currencies:
                     msg = get_info()
@@ -129,11 +121,8 @@ class InterfaceNode():
                     balance = getattr(r, "balance_" + currency)
                     msg.coin = currency
                     msg.balance = balance
-                    #test_string = "%r" % r.server_time
-                    msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
+                    #msg.server_time = r.server_time.strftime("%Y-%m-%d %H:%M:%S")
                     res.info.append(msg)
-                    #res.append(self.msg)
-#self.topics[counter].publish(self.msg)
                     counter = counter + 1
                         
                 self.topic_names_init = True
@@ -144,9 +133,6 @@ class InterfaceNode():
 
                 self.conn = btceapi.BTCEConnection()
                 pass
-               #get_info_
-            #tester = get_info_allResponse()
-            #tester.info = response
         return res
 
                   

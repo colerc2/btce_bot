@@ -9,10 +9,13 @@
 #include <trade_interface/get_info.h>
 #include <trade_interface/get_info_all.h>
 
+#define LOCAL 0
+#define REMOTE 1
+
 struct wallet {
-  double btc_balance;
-  double ltc_balance;
-  double usd_balance;
+  double btc_balance[2];
+  double ltc_balance[2];
+  double usd_balance[2];
   
   int active_orders;
 };
@@ -22,11 +25,14 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   
 }
 
-void handle_get_info_res(std::vector<trade_interface::get_info> &info){
-  for(int i = 0; i < info.size(); i++){
-    std::cout << "Coin   : " << info[i].coin << std::endl;
-    std::cout << "Balance: " << info[i].balance << std::endl;
-    std::cout << "Time   : " << info[i].server_time << std::endl;
+void handle_get_info_res(trade_interface::get_info_all::Response &res){
+  std::cout << "Transaction count: " << res.transaction_count << std::endl;
+  std::cout << "Open orders: " << res.open_orders << std::endl;
+  std::cout << "Server Time: " << res.server_time << std::endl;
+  for(unsigned int i = 0; i < res.info.size(); i++){
+    std::cout << "Coin   : " << res.info[i].coin << std::endl;
+    std::cout << "Balance: " << res.info[i].balance << std::endl;
+    //   std::cout << "Time   : " << info[i].server_time << std::endl;
     std::cout << "------------------------" << std::endl;
   }
 }
@@ -54,14 +60,14 @@ int main(int argc, char** argv){
   //Publishers
   //global_pub_ = n.advertise<example_node::some_msg>("topic_name", 10);
 
-  ros::Rate rate(1);
+  ros::Rate rate(5);
   //use a single thread for callbacks
   ros::AsyncSpinner spinner(1);
   spinner.start();
   while(ros::ok()){
     //every few seconds, check to make sure our wallet is synced with BTC-e wallet
     if(get_info_client.call(srv)){
-      handle_get_info_res(srv.response.info);
+      handle_get_info_res(srv.response);
     }else{
       ROS_ERROR("Failed to call service /get_info_service");
       return 1;
