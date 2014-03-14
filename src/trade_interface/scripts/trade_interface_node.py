@@ -8,6 +8,7 @@ import time
 import sys
 from trade_interface.msg import get_info
 from trade_interface.msg import trans_history
+from trade_interface.msg import active_orders
 from trade_interface.srv import *
 from collections import deque
 import pylab
@@ -26,6 +27,8 @@ class InterfaceNode():
         #intiate a bunch of services
         get_info_service = rospy.Service('get_info_service', get_info_all, self.call_get_info)
         trans_history_service = rospy.Service('trans_history_service', trans_history_all, self.call_trans_history)
+        active_orders_service = rospy.Service('active_orders_service', active_orders_all, self.call_active_orders)
+        #trade_history_service = rospy.Service('trade_history_service', trade_history_all, self.call_trade_history)
         rospy.spin()
         
         #while not rospy.is_shutdown():
@@ -38,21 +41,24 @@ class InterfaceNode():
          #   rospy.sleep(5.0)
 
 
-    def call_order_list(self):
+    def call_active_orders(self, req):
+        res = active_orders_allResponse()
         for key in self.handler.getKeys():
             t = btceapi.TradeAPI(key, self.handler)
             try:
                 orders = t.activeOrders(connection = self.conn)
                 if orders:
                     for o in orders:
-                        print "\t\t order id: %r" % o.order_id
-                        print "\t\t type: %s" % o.type
-                        print "\t\t pair: %s" % o.pair
-                        print "\t\t rate: %s" % o.rate
-                        print "\t\t amount: %s" % o.amount
-                        print "\t\t created: %r" % o.timestamp_created
-                        print "\t\t status: %r" % o.status
-                        print
+                        msg = active_orders()
+                        msg.order_id = int(o.order_id)
+                        msg.type = o.type.encode('ascii')
+                        msg.pair = o.pair.encode('ascii')
+                        msg.rate = float(o.rate)
+                        msg.amount = float(o.amount)
+                        msg.timestamp_created = o.timestamp_created.strftime("%Y-%m-%d %H:%M:%S")
+                        msg.status = int(o.status)
+                        
+                        res.orders.append(msg)
                 else:
                     print "\t\tno orders"
             except Exception as e:
@@ -61,6 +67,7 @@ class InterfaceNode():
                 
                 self.conn = btceapi.BTCEConnection()
                 pass
+        return res
             
     
 

@@ -10,6 +10,8 @@
 #include <trade_interface/get_info_all.h>
 #include <trade_interface/trans_history.h>
 #include <trade_interface/trans_history_all.h>
+#include <trade_interface/active_orders.h>
+#include <trade_interface/active_orders_all.h>
 
 #define LOCAL 0
 #define REMOTE 1
@@ -25,6 +27,19 @@ ros::Subscriber sell_subscriber_;
 
 void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   
+}
+
+void handle_active_orders_res(trade_interface::active_orders_all::Response &res){
+  for(unsigned int i = 0; i < res.orders.size(); i++){
+    std::cout << "Order id     : " << res.orders[i].order_id << std::endl;
+    std::cout << "Type         : " << res.orders[i].type << std::endl;
+    std::cout << "Pair         : " << res.orders[i].pair << std::endl;
+    std::cout << "Rate         : " << res.orders[i].rate << std::endl;
+    std::cout << "Amount       : " << res.orders[i].amount << std::endl;
+    std::cout << "Time created : " << res.orders[i].timestamp_created << std::endl;
+    std::cout << "Status       : " << res.orders[i].status << std::endl;
+    std::cout << "----------------------------" << std::endl;
+  }
 }
 
 void handle_get_info_res(trade_interface::get_info_all::Response &res){
@@ -62,9 +77,10 @@ int main(int argc, char** argv){
   //trans_history service
   ros::ServiceClient trans_history_client = n.serviceClient<trade_interface::trans_history_all>("trans_history_service");
   trade_interface::trans_history_all trans_history_srv;
+  //active orders service
+  ros::ServiceClient active_orders_client = n.serviceClient<trade_interface::active_orders_all>("active_orders_service");
+  trade_interface::active_orders_all active_orders_srv;
 
-  //TODO: routine that syncs this wallet with BTC-e wallet
-  
   //Subscribers
   //std::string sell_topic = "sell";
   //global_sub_ = n.subscribe(sell_topic, 1, sell_callback);
@@ -79,16 +95,23 @@ int main(int argc, char** argv){
   while(ros::ok()){
     //every few seconds, check to make sure our wallet is synced with BTC-e wallet
     if(get_info_client.call(get_info_srv)){
-      handle_get_info_res(get_info_srv.response);
+      //handle_get_info_res(get_info_srv.response);
     }else{
       ROS_ERROR("Failed to call service /get_info_service");
       return 1;
     }
     //call trans_history_all service
     if(trans_history_client.call(trans_history_srv)){
-      handle_trans_history_res(trans_history_srv.response);
+      //handle_trans_history_res(trans_history_srv.response);
     }else{
       ROS_ERROR("Failed to call service /trans_history_service");
+      return 1;
+    }
+    //call active orders service
+    if(active_orders_client.call(active_orders_srv)){
+      handle_active_orders_res(active_orders_srv.response);
+    }else{
+      ROS_ERROR("Failed to call service /active_orders_service");
       return 1;
     }
 
