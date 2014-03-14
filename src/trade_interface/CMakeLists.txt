@@ -58,6 +58,7 @@ add_service_files(
   get_info_all.srv
   trans_history_all.srv
   active_orders_all.srv
+  cancel_order.srv
 )
 
 ## Generate actions in the 'action' folder

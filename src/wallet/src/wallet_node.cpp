@@ -12,6 +12,7 @@
 #include <trade_interface/trans_history_all.h>
 #include <trade_interface/active_orders.h>
 #include <trade_interface/active_orders_all.h>
+#include <trade_interface/cancel_order.h>
 
 #define LOCAL 0
 #define REMOTE 1
@@ -80,6 +81,9 @@ int main(int argc, char** argv){
   //active orders service
   ros::ServiceClient active_orders_client = n.serviceClient<trade_interface::active_orders_all>("active_orders_service");
   trade_interface::active_orders_all active_orders_srv;
+  //cancel order service
+  ros::ServiceClient cancel_order_client = n.serviceClient<trade_interface::cancel_order>("cancel_order_service");
+  trade_interface::cancel_order cancel_order_srv;
 
   //Subscribers
   //std::string sell_topic = "sell";
@@ -109,9 +113,17 @@ int main(int argc, char** argv){
     }
     //call active orders service
     if(active_orders_client.call(active_orders_srv)){
-      handle_active_orders_res(active_orders_srv.response);
+      //handle_active_orders_res(active_orders_srv.response);
     }else{
       ROS_ERROR("Failed to call service /active_orders_service");
+      return 1;
+    }
+    //cancel order service
+    cancel_order_srv.request.order_id = 0;
+    if(cancel_order_client.call(cancel_order_srv)){
+      ROS_INFO("Cancel order %ld success: %d", cancel_order_srv.request.order_id, cancel_order_srv.response.completed);
+    }else{
+      ROS_ERROR("Failed to call service /cancel_order_service");
       return 1;
     }
 
