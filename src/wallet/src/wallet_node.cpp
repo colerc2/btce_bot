@@ -13,6 +13,7 @@
 #include <trade_interface/active_orders.h>
 #include <trade_interface/active_orders_all.h>
 #include <trade_interface/cancel_order.h>
+#include <trade_interface/make_trade.h>
 
 #define LOCAL 0
 #define REMOTE 1

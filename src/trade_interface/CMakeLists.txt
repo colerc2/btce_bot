@@ -59,6 +59,7 @@ add_service_files(
   trans_history_all.srv
   active_orders_all.srv
   cancel_order.srv
+  make_trade.srv
 )
 
 ## Generate actions in the 'action' folder

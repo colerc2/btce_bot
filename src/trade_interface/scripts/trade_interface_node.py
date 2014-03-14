@@ -29,6 +29,7 @@ class InterfaceNode():
         trans_history_service = rospy.Service('trans_history_service', trans_history_all, self.call_trans_history)
         active_orders_service = rospy.Service('active_orders_service', active_orders_all, self.call_active_orders)
         cancel_order_service = rospy.Service('cancel_order_service', cancel_order, self.call_cancel_order)
+        make_trade_service = rospy.Service('make_trade_service', make_trade, self.call_make_trade)
         #trade_history_service = rospy.Service('trade_history_service', trade_history_all, self.call_trade_history)
         rospy.spin()
         
@@ -40,7 +41,22 @@ class InterfaceNode():
             #self.call_trade_history()
          #   self.call_order_list()
          #   rospy.sleep(5.0)
-        
+
+    def call_make_trade(self, req):
+        res = make_tradeResponse()
+        for key in self.handler.getKeys():
+            t = btceapi.TradeAPI(key, self.handler)
+            try:
+                r = t.trade(req.pair, req.buy_or_sell, req.price, req.amount, self.conn)
+                res.order_id = r.order_id
+                res.received = r.received
+            except Exception as e:
+                print "  An error occurred: %s" % e
+                rospy.sleep(5.0)
+                
+                self.conn = btceapi.BTCEConnection()
+                pass
+        return res
         
     def call_cancel_order(self, req):
         res = cancel_orderResponse()

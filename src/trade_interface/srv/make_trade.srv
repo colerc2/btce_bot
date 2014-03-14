@@ -1,0 +1,7 @@
+string pair
+string buy_or_sell
+float64 price
+float64 amount
+---
+int64 order_id
+float64 received
