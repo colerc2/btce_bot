@@ -85,6 +85,9 @@ int main(int argc, char** argv){
   //cancel order service
   ros::ServiceClient cancel_order_client = n.serviceClient<trade_interface::cancel_order>("cancel_order_service");
   trade_interface::cancel_order cancel_order_srv;
+  //make_trade 
+  ros::ServiceClient make_trade_client = n.serviceClient<trade_interface::make_trade>("make_trade_service");
+  trade_interface::make_trade make_trade_srv;
 
   //Subscribers
   //std::string sell_topic = "sell";
@@ -114,7 +117,7 @@ int main(int argc, char** argv){
     }
     //call active orders service
     if(active_orders_client.call(active_orders_srv)){
-      //handle_active_orders_res(active_orders_srv.response);
+      handle_active_orders_res(active_orders_srv.response);
     }else{
       ROS_ERROR("Failed to call service /active_orders_service");
       return 1;
@@ -127,6 +130,19 @@ int main(int argc, char** argv){
       ROS_ERROR("Failed to call service /cancel_order_service");
       return 1;
     }
+    //call trade service
+    make_trade_srv.request.pair = "ltc_usd";
+    make_trade_srv.request.buy_or_sell = "sell";
+    make_trade_srv.request.price = 20.6343543232;
+    make_trade_srv.request.amount = 1;
+    if(make_trade_client.call(make_trade_srv)){
+      ROS_INFO("Trade order success ahhhhhhh");
+    }else{
+      ROS_ERROR("Failed to call service /make_trade_service");
+      return 1;
+    }
+    
+    
 
     rate.sleep();
   }

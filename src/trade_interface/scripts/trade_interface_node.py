@@ -188,7 +188,7 @@ class InterfaceNode():
                   
 if __name__ == '__main__':
     #intialize node and name her
-    rospy.init_node('test_interface_node')
+    rospy.init_node('trade_interface_node')
 
     #go to class functions
     try:
