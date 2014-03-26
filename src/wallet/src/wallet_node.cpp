@@ -75,7 +75,7 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   trade_interface::make_trade make_trade_srv;
   make_trade_srv.request.pair = msg->current.tick.trade_pair;
   make_trade_srv.request.buy_or_sell = "sell";
-  make_trade_srv.request.price = msg->current.tick.last+4;
+  make_trade_srv.request.price = msg->current.tick.last;
   make_trade_srv.request.amount = 0.25;
   if(make_trade_client_.call(make_trade_srv)){
     buy_price_ = msg->current.tick.last * 0.994;
