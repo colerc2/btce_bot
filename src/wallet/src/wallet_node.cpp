@@ -45,17 +45,16 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   //this will need to change later
 
   //first call the active orders service 
-  trade_interface::get_info_all get_info_srv;
-  if(get_info_client_.call(get_info_srv)){
-    //handle_get_info_res(get_info_srv.response);
+  trade_interface::active_orders_all active_orders_srv;
+  if(active_orders_client_.call(active_orders_srv)){
+    //maybe do something in here later
   }else{
-    //TODO: need to propogate error some how
-    ROS_ERROR("Failed to call service /get_info_service");
+    ROS_ERROR("Failed to call service /active_orders_service");
     return;
   }
 
   //if the number of active orders is more than 1, display a message and exit
-  if(get_info_srv.response.open_orders > 0){
+  if(active_orders_srv.response.orders.size() > 0){
     ROS_WARN("Tried to make a sell order, but there is already an open order");
     return;
   }
@@ -67,7 +66,7 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   //TODO: change this so it's not just btc
   std::string which_coin = msg->current.tick.trade_pair.substr(0,3);
   double coin_available = wallet_[which_coin];
-  if(coin_available < 0.1){
+  if(coin_available < 0.25){
     ROS_WARN("Tried to make a sell order, but there is only %lf btc available", coin_available);
     return;
   }
@@ -77,11 +76,13 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   make_trade_srv.request.pair = msg->current.tick.trade_pair;
   make_trade_srv.request.buy_or_sell = "sell";
   make_trade_srv.request.price = msg->current.tick.last+4;
-  make_trade_srv.request.amount = 0.1;
+  make_trade_srv.request.amount = 0.25;
   if(make_trade_client_.call(make_trade_srv)){
     buy_price_ = msg->current.tick.last * 0.994;
     check_if_sold_ = true;
     sells_.push_back(*msg);
+    //TODO: more info
+    ROS_INFO("Sell order placed!");
   }else{
     ROS_WARN("Tried to make a sell order, some kind of error using trade_interface");
   }
@@ -103,14 +104,14 @@ void handle_active_orders_res(trade_interface::active_orders_all::Response &res)
 }
 
 void handle_get_info_res(trade_interface::get_info_all::Response &res){
-  std::cout << "Transaction count: " << res.transaction_count << std::endl;
-  std::cout << "Open orders: " << res.open_orders << std::endl;
-  std::cout << "Server Time: " << res.server_time << std::endl;
+  //std::cout << "Transaction count: " << res.transaction_count << std::endl;
+  //std::cout << "Open orders: " << res.open_orders << std::endl;
+  //std::cout << "Server Time: " << res.server_time << std::endl;
   for(unsigned int i = 0; i < res.info.size(); i++){
     wallet_[res.info[i].coin] = res.info[i].balance;
-    std::cout << "Coin   : " << res.info[i].coin << std::endl;
-    std::cout << "Balance: " << res.info[i].balance << std::endl;
-    std::cout << "------------------------" << std::endl;
+    //std::cout << "Coin   : " << res.info[i].coin << std::endl;
+    //std::cout << "Balance: " << res.info[i].balance << std::endl;
+    //std::cout << "------------------------" << std::endl;
   }
 }
 
@@ -172,8 +173,15 @@ int main(int argc, char** argv){
     }
     
     if(check_if_sold_){
+      if(active_orders_client_.call(active_orders_srv)){
+	//ROS_INFO("Number of orders: %lu", active_orders_srv.response.orders.size());
+      }else{
+	ROS_ERROR("Failed to call service /active_orders_service");
+	return 1;
+      }
+
       ROS_INFO("Inside loop checking if order sold");
-      if(get_info_srv.response.open_orders == 0){
+      if(active_orders_srv.response.orders.size() == 0){
 	//need to make a buy order
 	//TODO:for now, use all cash to buy, this should be much more complicated in the future
 	macd_sell_signal::sell this_sell = sells_.back();
@@ -196,39 +204,40 @@ int main(int argc, char** argv){
     }
     
 
-/*    //call trans_history_all service
-    if(trans_history_client.call(trans_history_srv)){
-      //handle_trans_history_res(trans_history_srv.response);
-    }else{
-      ROS_ERROR("Failed to call service /trans_history_service");
-      return 1;
-    }
-    //call active orders service
-    if(active_orders_client.call(active_orders_srv)){
-      handle_active_orders_res(active_orders_srv.response);
-    }else{
-      ROS_ERROR("Failed to call service /active_orders_service");
-      return 1;
-    }
-    //cancel order service
-    cancel_order_srv.request.order_id = 0;
-    if(cancel_order_client.call(cancel_order_srv)){
-      ROS_INFO("Cancel order %ld success: %d", cancel_order_srv.request.order_id, cancel_order_srv.response.completed);
-    }else{
-      ROS_ERROR("Failed to call service /cancel_order_service");
-      return 1;
-    }
-    //call trade service
-    make_trade_srv.request.pair = "ltc_usd";
-    make_trade_srv.request.buy_or_sell = "sell";
-    make_trade_srv.request.price = 20.6343543232;
-    make_trade_srv.request.amount = 1;
-    if(make_trade_client.call(make_trade_srv)){
-      ROS_INFO("Trade order success ahhhhhhh");
-    }else{
-      ROS_ERROR("Failed to call service /make_trade_service");
-      return 1;
-      }*/
+    /*    //call trans_history_all service
+	  if(trans_history_client.call(trans_history_srv)){
+	  //handle_trans_history_res(trans_history_srv.response);
+	  }else{
+	  ROS_ERROR("Failed to call service /trans_history_service");
+	  return 1;
+	  }
+	  //call active orders service*/
+    /*    if(active_orders_client_.call(active_orders_srv)){
+	  ROS_INFO("Number of orders: %lu", active_orders_srv.response.orders.size());
+	  //      handle_active_orders_res(active_orders_srv.response);
+	  }else{
+	  ROS_ERROR("Failed to call service /active_orders_service");
+	  return 1;
+	  }*/
+    /*    //cancel order service
+	  cancel_order_srv.request.order_id = 0;
+	  if(cancel_order_client.call(cancel_order_srv)){
+	  ROS_INFO("Cancel order %ld success: %d", cancel_order_srv.request.order_id, cancel_order_srv.response.completed);
+	  }else{
+	  ROS_ERROR("Failed to call service /cancel_order_service");
+	  return 1;
+	  }
+	  //call trade service
+	  make_trade_srv.request.pair = "ltc_usd";
+	  make_trade_srv.request.buy_or_sell = "sell";
+	  make_trade_srv.request.price = 20.6343543232;
+	  make_trade_srv.request.amount = 1;
+	  if(make_trade_client.call(make_trade_srv)){
+	  ROS_INFO("Trade order success ahhhhhhh");
+	  }else{
+	  ROS_ERROR("Failed to call service /make_trade_service");
+	  return 1;
+	  }*/
     
     
 
