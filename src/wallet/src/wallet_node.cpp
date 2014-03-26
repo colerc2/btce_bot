@@ -76,7 +76,7 @@ void sell_callback(const macd_sell_signal::sell::ConstPtr &msg){
   trade_interface::make_trade make_trade_srv;
   make_trade_srv.request.pair = msg->current.tick.trade_pair;
   make_trade_srv.request.buy_or_sell = "sell";
-  make_trade_srv.request.price = msg->current.tick.last;
+  make_trade_srv.request.price = msg->current.tick.last+4;
   make_trade_srv.request.amount = 0.1;
   if(make_trade_client_.call(make_trade_srv)){
     buy_price_ = msg->current.tick.last * 0.994;
@@ -172,6 +172,7 @@ int main(int argc, char** argv){
     }
     
     if(check_if_sold_){
+      ROS_INFO("Inside loop checking if order sold");
       if(get_info_srv.response.open_orders == 0){
 	//need to make a buy order
 	//TODO:for now, use all cash to buy, this should be much more complicated in the future
@@ -180,8 +181,9 @@ int main(int argc, char** argv){
 	make_trade_srv.request.pair = this_sell.current.tick.trade_pair;
 	make_trade_srv.request.buy_or_sell = "buy";
 	make_trade_srv.request.price = buy_price_;
-	make_trade_srv.request.amount = wallet["usd"]/buy_price_;
-	if(make_trade_client.call(make_trade_srv)){
+	make_trade_srv.request.amount = wallet_["usd"]/buy_price_;
+	if(make_trade_client_.call(make_trade_srv)){
+	  check_if_sold_ = false;
 	  ROS_INFO("Trade order buy a success");
 	}else{
 	  //TODO: print meaningful error message
