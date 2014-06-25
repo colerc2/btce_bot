@@ -458,10 +458,10 @@ int main(int argc, char** argv){
   //active orders service
   active_orders_client_ = n.serviceClient<trade_interface::active_orders_all>("active_orders_service");
   trade_interface::active_orders_all active_orders_srv;
-  //cancel order service
+  //cancel order service TODO
   cancel_order_client_ = n.serviceClient<trade_interface::cancel_order>("cancel_order_service");
   trade_interface::cancel_order cancel_order_srv;
-  //make_trade 
+  //make_trade TODO
   make_trade_client_ = n.serviceClient<trade_interface::make_trade>("make_trade_service");
   trade_interface::make_trade make_trade_srv;
 
