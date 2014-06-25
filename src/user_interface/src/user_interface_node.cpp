@@ -370,9 +370,11 @@ bool new_filter(){
 }
 
 void handle_get_info_res(trade_interface::get_info_all::Response &res){
+  std::cout << "------------------------" << std::endl;
   std::cout << "Transaction count: " << res.transaction_count << std::endl;
   std::cout << "Open orders: " << res.open_orders << std::endl;
   std::cout << "Server Time: " << res.server_time << std::endl;
+  std::cout << "------------------------" << std::endl;
   for(unsigned int i = 0; i < res.info.size(); i++){
     //wallet_[res.info[i].coin] = res.info[i].balance;
     if(res.info[i].balance != 0){
@@ -380,6 +382,43 @@ void handle_get_info_res(trade_interface::get_info_all::Response &res){
       std::cout << "Balance: " << res.info[i].balance << std::endl;
       std::cout << "------------------------" << std::endl;
     }
+  }
+}
+
+void handle_trans_history_res(trade_interface::trans_history_all::Response &res){
+  for(unsigned int i = (res.trans_hist_array.size()-1); i > 0; i--){
+    std::cout << "Transaction id   : " << res.trans_hist_array[i].transaction_id << std::endl;
+    std::cout << "Type             : " << res.trans_hist_array[i].type << std::endl;
+    std::cout << "Amount           : " << res.trans_hist_array[i].amount << std::endl;
+    std::cout << "Currency         : " << res.trans_hist_array[i].currency << std::endl;
+    std::cout << "Description      : " << res.trans_hist_array[i].desc << std::endl;
+    std::cout << "Status           : " << res.trans_hist_array[i].status << std::endl;
+    std::cout << "Timestamp        : " << res.trans_hist_array[i].timestamp << std::endl;
+    std::cout << "------------------------" << std::endl;
+  }
+  //had to repeat this code because unsigned int in the above for loop can't depend
+  //on the condition i want which is (i > -1), so i'm forced to print the last one manually
+  std::cout << "Transaction id   : " << res.trans_hist_array[0].transaction_id << std::endl;
+  std::cout << "Type             : " << res.trans_hist_array[0].type << std::endl;
+  std::cout << "Amount           : " << res.trans_hist_array[0].amount << std::endl;
+  std::cout << "Currency         : " << res.trans_hist_array[0].currency << std::endl;
+  std::cout << "Description      : " << res.trans_hist_array[0].desc << std::endl;
+  std::cout << "Status           : " << res.trans_hist_array[0].status << std::endl;
+  std::cout << "Timestamp        : " << res.trans_hist_array[0].timestamp << std::endl;
+  std::cout << "------------------------" << std::endl;
+}
+
+
+void handle_active_orders_res(trade_interface::active_orders_all::Response &res){
+  for(unsigned int i = 0; i < res.orders.size(); i++){
+    std::cout << "Order id     : " << res.orders[i].order_id << std::endl;
+    std::cout << "Type         : " << res.orders[i].type << std::endl;
+    std::cout << "Pair         : " << res.orders[i].pair << std::endl;
+    std::cout << "Rate         : " << res.orders[i].rate << std::endl;
+    std::cout << "Amount       : " << res.orders[i].amount << std::endl;
+    std::cout << "Time created : " << res.orders[i].timestamp_created << std::endl;
+    std::cout << "Status       : " << res.orders[i].status << std::endl;
+    std::cout << "----------------------------" << std::endl;
   }
 }
 
@@ -394,6 +433,8 @@ void print_help_screen(){
   std::cout << "\tk(ill) - kill individual nodes" << std::endl;
   std::cout << "\ts(ells) - list of current sells" << std::endl;
   std::cout << "\tw(allet) - get info from btc-e" << std::endl;
+  std::cout << "\tt(rancsactions) - get transaction history" << std::endl;
+  std::cout << "\to(rders) - get active orders" << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -461,8 +502,24 @@ int main(int argc, char** argv){
 	handle_get_info_res(get_info_srv.response);
       }else{
 	ROS_ERROR("Failed to call service /get_info_service");
+	return 1;
       }
-    } 
+    }else if(input == "t" || input == "transactions"){
+      if(trans_history_client_.call(trans_history_srv)){
+	handle_trans_history_res(trans_history_srv.response);
+      }else{
+	ROS_ERROR("Failed to call service /trans_history_service");
+	return 1;
+      }
+    }else if(input == "o" || input == "orders"){
+      if(active_orders_client_.call(active_orders_srv)){
+	ROS_INFO("Number of orders: %lu", active_orders_srv.response.orders.size());
+	handle_active_orders_res(active_orders_srv.response);
+      }else{
+	ROS_ERROR("Failed to call service /active_orders_service");
+	return 1;
+      }
+    }
 
   }
   spinner.stop();
