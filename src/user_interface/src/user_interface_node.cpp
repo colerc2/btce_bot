@@ -13,11 +13,26 @@
 #include <ticker_publisher/ticker.h>
 #include <sell_signal_filter/history.h>
 #include <btce_health/server_time.h>
+#include <trade_interface/get_info.h>
+#include <trade_interface/get_info_all.h>
+#include <trade_interface/trans_history.h>
+#include <trade_interface/trans_history_all.h>
+#include <trade_interface/active_orders.h>
+#include <trade_interface/active_orders_all.h>
+#include <trade_interface/cancel_order.h>
+#include <trade_interface/make_trade.h>
 #include <time.h>
 #include <stdio.h>
 
 
 ros::ServiceClient server_time_client_;
+//trade interface stuff
+ros::ServiceClient get_info_client_;
+ros::ServiceClient trans_history_client_;
+ros::ServiceClient active_orders_client_;
+ros::ServiceClient cancel_order_client_;
+ros::ServiceClient make_trade_client_;
+
 
 void print_vector(std::vector<std::string> &print_me){
   std::copy(print_me.begin(),
@@ -354,6 +369,20 @@ bool new_filter(){
   return false;
 }
 
+void handle_get_info_res(trade_interface::get_info_all::Response &res){
+  std::cout << "Transaction count: " << res.transaction_count << std::endl;
+  std::cout << "Open orders: " << res.open_orders << std::endl;
+  std::cout << "Server Time: " << res.server_time << std::endl;
+  for(unsigned int i = 0; i < res.info.size(); i++){
+    //wallet_[res.info[i].coin] = res.info[i].balance;
+    if(res.info[i].balance != 0){
+      std::cout << "Coin   : " << res.info[i].coin << std::endl;
+      std::cout << "Balance: " << res.info[i].balance << std::endl;
+      std::cout << "------------------------" << std::endl;
+    }
+  }
+}
+
 void print_help_screen(){
   std::cout << "Available commands:" << std::endl;
   std::cout << "\th(elp) - help - display this screen" << std::endl;
@@ -364,6 +393,7 @@ void print_help_screen(){
   std::cout << "\tkillall - kill all MACD nodes" << std::endl;
   std::cout << "\tk(ill) - kill individual nodes" << std::endl;
   std::cout << "\ts(ells) - list of current sells" << std::endl;
+  std::cout << "\tw(allet) - get info from btc-e" << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -376,6 +406,24 @@ int main(int argc, char** argv){
   ros::ServiceClient sell_history_client = n.serviceClient<sell_signal_filter::history>(sell_history_service_name);
   sell_signal_filter::history srv;
   server_time_client_ = n.serviceClient<btce_health::server_time>("server_time");
+
+  //Services (clients) (more of them)
+  //get_info service
+  get_info_client_ = n.serviceClient<trade_interface::get_info_all>("get_info_service");
+  trade_interface::get_info_all get_info_srv;
+  //trans_history service
+  trans_history_client_ = n.serviceClient<trade_interface::trans_history_all>("trans_history_service");
+  trade_interface::trans_history_all trans_history_srv;
+  //active orders service
+  active_orders_client_ = n.serviceClient<trade_interface::active_orders_all>("active_orders_service");
+  trade_interface::active_orders_all active_orders_srv;
+  //cancel order service
+  cancel_order_client_ = n.serviceClient<trade_interface::cancel_order>("cancel_order_service");
+  trade_interface::cancel_order cancel_order_srv;
+  //make_trade 
+  make_trade_client_ = n.serviceClient<trade_interface::make_trade>("make_trade_service");
+  trade_interface::make_trade make_trade_srv;
+
 
   ros::Rate rate(100);
   //use a seperate thread for callbacks, might do something with current thread later
@@ -408,7 +456,14 @@ int main(int argc, char** argv){
       kill_all_macd_nodes();
     }else if(input == "k" || input == "kill"){
       kill_individual_nodes();
-    }
+    }else if(input == "w" || input == "wallet"){
+      if(get_info_client_.call(get_info_srv)){
+	handle_get_info_res(get_info_srv.response);
+      }else{
+	ROS_ERROR("Failed to call service /get_info_service");
+      }
+    } 
+
   }
   spinner.stop();
   

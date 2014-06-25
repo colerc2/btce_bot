@@ -200,7 +200,7 @@ int main(int argc, char** argv){
 
   //
   ros::Rate rate(100);
-  //only use one thread for callbacks, that was the service never responds
+  //only use one thread for callbacks, that way the service never responds
   //while the array is being manipulated
   ros::AsyncSpinner spinner(1);
   spinner.start();
