@@ -21,6 +21,7 @@
 #include <trade_interface/active_orders_all.h>
 #include <trade_interface/cancel_order.h>
 #include <trade_interface/make_trade.h>
+#include <cell_phone_interface/send_text_msg.h>
 #include <time.h>
 #include <stdio.h>
 
@@ -32,7 +33,7 @@ ros::ServiceClient trans_history_client_;
 ros::ServiceClient active_orders_client_;
 ros::ServiceClient cancel_order_client_;
 ros::ServiceClient make_trade_client_;
-
+ros::ServiceClient send_text_client_;
 
 void print_vector(std::vector<std::string> &print_me){
   std::copy(print_me.begin(),
@@ -422,6 +423,20 @@ void handle_active_orders_res(trade_interface::active_orders_all::Response &res)
   }
 }
 
+void handle_sending_text(cell_phone_interface::send_text_msg &send_text_srv){
+  std::string text_msg;
+  std::cout << "What should the text say? ";
+  std::getline(std::cin, text_msg);
+  std::getline(std::cin, text_msg);//not sure why TODO
+  send_text_srv.request.text_msg = text_msg;
+  if(send_text_client_.call(send_text_srv)){
+    //handle_active_orders_res(active_orders_srv.response);
+  }else{
+    ROS_ERROR("Failed to call service /send_text_service");
+  }
+  
+}
+
 void print_help_screen(){
   std::cout << "Available commands:" << std::endl;
   std::cout << "\th(elp) - help - display this screen" << std::endl;
@@ -435,6 +450,7 @@ void print_help_screen(){
   std::cout << "\tw(allet) - get info from btc-e" << std::endl;
   std::cout << "\tt(rancsactions) - get transaction history" << std::endl;
   std::cout << "\to(rders) - get active orders" << std::endl;
+  std::cout << "\ttext - send text message to cell phone" << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -447,6 +463,8 @@ int main(int argc, char** argv){
   ros::ServiceClient sell_history_client = n.serviceClient<sell_signal_filter::history>(sell_history_service_name);
   sell_signal_filter::history srv;
   server_time_client_ = n.serviceClient<btce_health::server_time>("server_time");
+  send_text_client_ = n.serviceClient<cell_phone_interface::send_text_msg>("send_text_service");
+  cell_phone_interface::send_text_msg send_text_srv;
 
   //Services (clients) (more of them)
   //get_info service
@@ -519,6 +537,8 @@ int main(int argc, char** argv){
 	ROS_ERROR("Failed to call service /active_orders_service");
 	return 1;
       }
+    }else if(input == "text"){
+      handle_sending_text(send_text_srv);
     }
 
   }

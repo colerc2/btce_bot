@@ -1,0 +1,9 @@
+<launch> 
+
+ <node pkg="cell_phone_interface" type="cell_phone_interface_node.py" name="cell_phone_interface" output="screen">
+    <param name="email" value="cole.robert.c@gmail.com"/>
+    <param name="password_file" value="/home/bob/Documents/btce_bot/password.email"/>
+    <param name="phone_number" value="5132924221@vtext.com"/>
+  </node>
+  
+</launch>
