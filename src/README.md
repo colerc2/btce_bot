@@ -32,7 +32,8 @@ This package subscribes to all of the current ticker topics and saves their data
 
 #### [sell_signal_filter](sell_signal_filter)
 This package subscribes to all of the current MACD topics' sell signals. In the event of a sell signal from any of the nodes, it does a bunch of double checking to make sure it's really ok to go ahead with a sell.
-- Publishers - None (yet)
+- Publishers
+  - [/sell](macd_sell_signal/msg/sell.msg)
 - Subscribers - [/macd_short_long_sig_xperiod/sell](macd_sell_signal/msg/sell.msg)
 - Services (Server) - None
 - Services (Client) - None
@@ -46,9 +47,28 @@ This package grabs ticker data from the btc-e site and publishes to a topic base
 
 #### [trade_interface](trade_interface)
 This package uses the BTC-e API to execute trades/cancel orders/check orderbook/etc. All of these methods are provided via a service to the rest of the code. (This is mostly done because the majority of the code is written in C++, and this provides a convienient way for the C++ code to access the BTC-e API.)
+- Publishers - None
+- Subscribers - None
+- Services (Server)
+  - [/get_info_service](trade_interface/srv/get_info_all.srv)
+  - [/trans_history_service](trade_interface/srv/trans_history_all.srv)
+  - [/active_orders_service](trade_interface/srv/active_orders_all.srv)
+  - [/cancel_order_service](trade_interface/srv/cancel_order.srv)
+  - [/make_trade_service](trade_interface/srv/make_trade.srv)
+- Services (Client) - None
 
 #### [user_interface](user_interface)
 This package provides a convienient command line utility to start/stop MACD nodes, show plots of current data, and show information about current sell orders. It will eventually provide information on the user wallet and buy orders. It may also provide a way to execute buy/sell orders from the command line.
 
 #### [wallet](wallet)
 The wallet package will listen for sell signals coming from the sell_signal_filter node and execute these sells if it determines that all is a go. It will do a few sanity checks before executing a sell, one will be a call to the service that the btce_health package provides, another will be a check to make sure that the number of orders & coin balances in our local copy match what BTC-e has on record.
+- Publishers - None
+- Subscribers
+  - [/sell](macd_sell_signal/msg/sell.msg)
+- Services (Server)
+- Services (Client)
+  - [/get_info_service](trade_interface/srv/get_info_all.srv)
+  - [/trans_history_service](trade_interface/srv/trans_history_all.srv)
+  - [/active_orders_service](trade_interface/srv/active_orders_all.srv)
+  - [/cancel_order_service](trade_interface/srv/cancel_order.srv)
+  - [/make_trade_service](trade_interface/srv/make_trade.srv)
