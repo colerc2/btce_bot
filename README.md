@@ -1,7 +1,7 @@
 btce_bot
 ========
 
-BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from [this repo](https://github.com/alanmcintyre/btce-api). This bot uses multiple MACD filters along with other hueristics to identify optimal sell and buy times and execute trades using BTC-e's API. Can also be used to collect raw ticker data from BTC-e for post processing. Each of the packages in the [src](src) directory are explained in detail inside their respective directories.
+BTC-E trading bot written in C++/Python using ROS. All BTC-e API was taken from [this repo](https://github.com/alanmcintyre/btce-api). This bot uses multiple MACD indicators along with other hueristics to identify optimal sell and buy times and execute trades using BTC-e's API. Can also be used to collect raw ticker data from BTC-e for post processing. Each of the packages in the [src](src) directory are explained in detail inside their respective directories.
 
 ###Install
 
